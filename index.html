@@ -250,6 +250,17 @@ textarea{width:100%;min-height:60px;background:#fffdf6;color:var(--ink);border:1
 #fxui .inkbtn{position:relative}
 #fxui .info{position:absolute;left:0;right:0;top:34%;text-align:center;color:#eef4f2;font-size:13px;text-shadow:0 1px 2px #000;pointer-events:none}
 #fxui .info b{color:#ffd77a}
+.xmimg{display:block;margin:0 auto 4px;filter:drop-shadow(0 0 10px rgba(200,40,90,.8));animation:xmfloat 2.4s ease-in-out infinite}
+@keyframes xmfloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.03)}}
+#gateArt{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(60,10,40,.75),rgba(0,0,0,.85));color:#ffe9c0;font:600 18px var(--kai);text-align:center;white-space:pre-line;animation:gafade .4s}
+#gateArt img{animation:gain .9s cubic-bezier(.2,1.6,.4,1),xmfloat 2.4s ease-in-out .9s infinite;filter:drop-shadow(0 0 18px rgba(255,40,90,.9))}
+#gateArt.ok img{animation:gbreak 1.6s forwards}
+@keyframes gain{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes gbreak{0%{transform:scale(1);opacity:1;filter:drop-shadow(0 0 18px #fff) brightness(1)}60%{transform:scale(1.15);filter:drop-shadow(0 0 40px #fff) brightness(3)}100%{transform:scale(1.4);opacity:0;filter:blur(6px) brightness(4)}}
+@keyframes gafade{from{opacity:0}}
+.mline{display:flex;align-items:center;gap:8px;padding:7px 9px;margin-bottom:6px}.mbar{flex:1;height:7px;border-radius:4px;background:#e6dcc6;overflow:hidden}.mbar i{display:block;height:100%;background:linear-gradient(90deg,#c8902a,#f1c76a)}
+.mnode{display:inline-block;padding:1px 6px;margin:2px 3px 0 0;border-radius:8px;font-size:11px;background:#eee4d0;color:#8a7a60}.mnode.on{background:#f1c76a;color:#5a3a10;font-weight:700}
+.bondr{padding:5px 8px;margin-bottom:4px;font-size:12px;border-radius:8px;background:#f4ecdc;color:#8a7a60}.bondr.on{background:linear-gradient(90deg,#ffe6a8,#fff3d6);color:#5a3a10;box-shadow:0 0 0 1.5px #e0a83a inset}
 #fxui .skip{position:absolute;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));pointer-events:auto;background:rgba(0,0,0,.55);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:14px;padding:4px 14px}
 .scrollbox{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:min(84vw,400px);pointer-events:auto;background:linear-gradient(#f3ead4,#e4d6b6);border:2px solid #8a7048;border-radius:6px;padding:22px 18px 16px;text-align:center;color:#3a2a14;box-shadow:0 10px 30px rgba(0,0,0,.5);animation:unroll .35s ease-out}
 .scrollbox:before,.scrollbox:after{content:"";position:absolute;left:-10px;right:-10px;height:12px;background:linear-gradient(#6b4f2a,#3d2c14,#6b4f2a);border-radius:6px}
@@ -439,7 +450,8 @@ const CFG = {
   field: { maxRounds: 20, enterSec: 0.7, evSec: 0.4, skillSec: 0.95, pskillSec: 0.8, dotSec: 0.25, endSec: 2.2, searchMap: 1.5, searchBetween: 1.2, lossRest: 10, syncSpeed: 10, holdMax: 3, dropRate: 0.016, herbRate: 0.005 }, // 逐场结算后每场约 26 秒（原固定 5 秒），每只妖兽的修为/灵石/掉率按场次减少的比例 ×5.4 上调，每天产出不变
   /* 词缀：野外妖兽有几率带 1–2 个词缀（高图更高）；AI 优先集火治疗/自爆；标签显示在名字前 */
   affix: {
-    chance: [0.04, 0.06, 0.09, 0.13, 0.18, 0.24, 0.3, 0.36, 0.42, 0.48], dual: 0.15,
+    chance: [0.04, 0.06, 0.09, 0.13, 0.18, 0.24, 0.3, 0.36, 0.42, 0.48], dual: 0.15, maxPerPack: 2, healUses: 2,
+    loot: { bomb: { ls: 1.0 }, heal: { exp: 0.3 }, other: { exp: 0.08 } }, // 击杀带词缀妖兽的额外奖励（按单只的倍率）
     types: {
       heal:   { name: '治疗型', short: '疗', color: '#3e8a55', heal: 0.16, cd: 2, threat: 100 },
       shield: { name: '护盾型', short: '盾', color: '#2766c4', shield: 0.28, threat: 40 },
@@ -454,27 +466,54 @@ const CFG = {
     cooldown: 900,
     /* hp/atk 相对同境界 monStats(L) 的倍率；skill 为心魔专用招式 */
     bosses: [
-      /* hp=×(玩家血×2)；atk=×玩家攻击；灵宠为额外优势。目标最优约 70% */
-      { name: '心魔·稚念', hp: 3.8, atk: 1.08, skill: 'slash', desc: '凡尘执念凝聚' },
-      { name: '心魔·欲焰', hp: 3.9, atk: 1.1, skill: 'burn', desc: '欲火焚心' },
-      { name: '心魔·执念', hp: 4.0, atk: 1.12, skill: 'slash', desc: '执而不化' },
-      { name: '心魔·贪障', hp: 4.1, atk: 1.14, skill: 'drain', desc: '贪念噬魂' },
-      { name: '心魔·嗔魔', hp: 4.2, atk: 1.16, skill: 'nova', desc: '怒气爆发' },
-      { name: '心魔·痴障', hp: 4.3, atk: 1.16, skill: 'drain', desc: '痴心不改' },
-      { name: '心魔·慢心', hp: 4.4, atk: 1.18, skill: 'armor', desc: '傲视众生' },
-      { name: '心魔·疑劫', hp: 4.5, atk: 1.2, skill: 'nova', desc: '疑念成劫' },
+      /* hp=×(同境界标准血×2)；atk=×标准攻击；再乘队伍实力^teamExp 与 hpMul/atkMul。目标：平均灵品宠 ~70%，无宠 ~10–25% */
+      { name: '心魔·稚念', hp: 2.8, atk: 0.9, skill: 'slash', desc: '凡尘执念凝聚' },
+      { name: '心魔·欲焰', hp: 2.29, atk: 0.9, skill: 'burn', desc: '欲火焚心' },
+      { name: '心魔·执念', hp: 3.0, atk: 1.0, skill: 'slash', desc: '执而不化' },
+      { name: '心魔·贪障', hp: 2.41, atk: 1.06, skill: 'drain', desc: '贪念噬魂' },
+      { name: '心魔·嗔魔', hp: 3.8, atk: 1.16, skill: 'nova', desc: '怒气爆发' },
+      { name: '心魔·痴障', hp: 3.44, atk: 1.16, skill: 'drain', desc: '痴心不改' },
+      { name: '心魔·慢心', hp: 3.43, atk: 1.18, skill: 'armor', desc: '傲视众生' },
+      { name: '心魔·疑劫', hp: 4.85, atk: 1.2, skill: 'nova', desc: '疑念成劫' },
       { name: '心魔·天魔', hp: 4.7, atk: 1.22, skill: 'nova', desc: '天魔合身' },
-      { name: '心魔·飞升影', hp: 5.0, atk: 1.25, skill: 'nova', desc: '飞升之影' }
+      { name: '心魔·飞升影', hp: 4.85, atk: 1.19, skill: 'nova', desc: '飞升之影' }
     ],
     skills: {
       slash: { name: '魔斩', mul: 1.5, cd: 2 },
       burn:  { name: '欲火', mul: 0.75, aoe: 1, cd: 3, dot: 0.18, dotR: 2 },
-      drain: { name: '噬魂', mul: 1.2, cd: 2, heal: 0.06 },
+      drain: { name: '噬魂', mul: 1.2, cd: 3, heal: 0.025 },
       nova:  { name: '心魔爆发', mul: 0.55, aoe: 1, cd: 3 },
       armor: { name: '铁石心肠', mul: 1.15, cd: 2, selfDR: 0.2, rounds: 2 }
     },
-    maxRounds: 30, expSec: 180
+    hpMul: 1.45, atkMul: 1.25, refUnits: 3, teamExp: 0.5, var: 0.3, maxRounds: 30, expSec: 180, tiers: [6, 8], // 心魔立绘阶：<60 紫、60–79 赤、≥80 黑金
   },
+  /* v2 功法·经脉：每升 1 层得 1 点经脉点（打坐悟道），分配到攻/血/速三脉；每脉达到节点解锁被动。洗点首次免费，之后花灵石 */
+  meridian: {
+    ptsPerLevel: 1, respecSec: 1800, // 洗点费用 = 打坐速率 × respecSec 秒对应的灵石（monLingshi × 60）
+    lines: {
+      atk: { name: '攻脉', icon: 'weapon', per: 0.005, stat: '攻击', nodes: [{ at: 15, name: '剑意', desc: '暴击率 +8%（暴击 ×1.6）', crit: 0.08 }, { at: 40, name: '锋芒', desc: '对精英 / Boss 伤害 +12%', eliteDmg: 0.12 }, { at: 70, name: '破军', desc: '攻击再 +5%', pct: 0.05 }] },
+      hp:  { name: '血脉', icon: 'heart', per: 0.007, stat: '气血', nodes: [{ at: 15, name: '护体', desc: '受到伤害 -6%', dr: 0.06 }, { at: 40, name: '回元', desc: '每回合回复 3% 气血', regen: 0.03 }, { at: 70, name: '金身', desc: '气血再 +5%', pct: 0.05 }] },
+      spd: { name: '速脉', icon: 'wind', per: 0.004, stat: '身法', nodes: [{ at: 15, name: '轻身', desc: '闪避率 +5%', dodge: 0.05 }, { at: 40, name: '疾影', desc: '额外行动几率 +6%', extra: 0.06 }, { at: 70, name: '无影', desc: '身法再 +5%', pct: 0.05 }] }
+    }
+  },
+  /* v2 同伴好感：野外胜利 / 赠礼增长；分级解锁同伴被动、合击、渡劫助阵 */
+  affinity: {
+    perWin: 0.05, levels: [0, 100, 300, 700, 1500], names: ['初识', '相熟', '知己', '莫逆', '生死之交'],
+    perks: ['—', '同伴攻击 +6%', '同伴气血 +10%', '解锁合击「双星连斩」：每 4 回合两人合力群攻（各 110%）', '渡劫助阵：额外 1 名围观 + 成功率 +3%'],
+    compAtk: 0.06, compHp: 0.1, heji: { cd: 4, mul: 1.1 }, tribSpec: 1, tribRate: 3,
+    gift: { daily: 3, lsSec: 80, lsAff: 25, herbAff: 15 } // 灵石礼 = monLingshi × lsSec；每日各 3 次
+  },
+  /* v2 宠物羁绊：玩家出战宠 + 同伴宠组成特定组合时全队加成 */
+  bonds: [
+    { a: 'fox', b: 'crane', name: '狐鹤同游', desc: '全队攻击 +6%', atk: 0.06 },
+    { a: 'eagle', b: 'ape', name: '雷猿惊天', desc: '全队暴击 +6%（×1.5）', crit: 0.06 },
+    { a: 'turtle', b: 'jiao', name: '玄蛟镇海', desc: '全队受伤 -6%', dr: 0.06 },
+    { a: 'boar', b: 'silk', name: '冰原猎手', desc: '全队气血 +8%', hp: 0.08 },
+    { a: 'crane', b: 'eagle', name: '比翼凌云', desc: '全队身法 +8%', spd: 0.08 },
+    { a: 'fox', b: 'jiao', name: '焰海双灵', desc: '全队攻击 +4%、气血 +4%', atk: 0.04, hp: 0.04 }
+  ],
+  /* v2 身法：身法高于对面平均时，按比例获得额外行动 / 闪避（克制，上限低） */
+  speed: { extraK: 0.25, extraCap: 0.06, dodgeK: 0.2, dodgeCap: 0.08 },
   /* 地图掉落侧重：四类轮换，期望日产大致守恒（加权均值 ≈ 1） */
   mapFocus: {
     keys: ['exp', 'gear', 'egg', 'lingshi'],
@@ -671,9 +710,9 @@ function newState(name, sect) {
     v: 1, name, sect, created: Date.now(), lastSave: Date.now(), serverT: 0, L: 0, exp: 0, lingshi: 200, xianyu: 300, jiyuan: 0,
     mode: 'field', mapId: 0, team: [], hired: [], bag: [], comp: newComp(sect),
     equip: { weapon: { slot: 'weapon', ilvl: 0, q: 0 }, armor: { slot: 'armor', ilvl: 0, q: 0 }, shoes: null, ring: null }, enh: { weapon: 0, armor: 0, shoes: 0, ring: 0 }, enhFail: { weapon: 0, armor: 0, shoes: 0, ring: 0 },
-    buffs: { med: 0, field: 0 }, daily: { date: '', signed: false, towerLeft: CFG.tower.daily, xiuwei: 0, watchLeft: CFG.watch.daily, merc: false },
+    buffs: { med: 0, field: 0 }, daily: { date: '', signed: false, towerLeft: CFG.tower.daily, xiuwei: 0, watchLeft: CFG.watch.daily, merc: false, gift: 0, giftH: 0 },
     plots: [], herbs: 4, pills: { xiuwei: 1, med: 1, field: 1, trib: 0 }, alchemyExp: 0, tower: { record: 0 },
-    botSeed: Math.floor(Math.random() * 1e9), botAff: {}, trib: null, tribCooldownT: 0, xinmo: 0, gateClear: {}, gateCdT: 0, autoBreak: false, autoEquip: true, speed: 1,
+    botSeed: Math.floor(Math.random() * 1e9), botAff: {}, trib: null, tribCooldownT: 0, xinmo: 0, gateClear: {}, gateCdT: 0, mer: { atk: 0, hp: 0, spd: 0, respec: 0 }, autoBreak: false, autoEquip: true, speed: 1,
     stats: { battles: 0, wins: 0, kills: 0, tribOK: 0, tribFail: 0, playSec: 0 }, finished: false, finishT: 0,
     chatNextT: 10, tribEvents: [], lastBotT: -999,
     pets: [], petOn: 0, petUid: 0, eggs: { fan: CFG.pet.startEggs, ling: 0, xian: 0 }, frag: 0, pity: 0, signDays: 0, petStat: { opened: 0, xian: 0 }
@@ -808,13 +847,29 @@ function exchangeEgg(kind) { const c = CFG.pet.shop[kind]; if (S.frag < c) retur
 function gainEgg(kind, n, why) { if (n <= 0) return; S.eggs[kind] += n; if (why) log(`${why}：获得${{ fan: '凡', ling: '灵', xian: '仙' }[kind]}蛋 ×${n}`, kind === 'fan' ? 'gain' : 'rare'); }
 
 /* ==================== 战斗 ==================== */
-function charStats(sect) { // 玩家与同伴共用：境界、装备、强化完全同步，只有宗门不同
+function merNodes(line) { const pts = (S.mer && S.mer[line]) || 0; return CFG.meridian.lines[line].nodes.filter(n => pts >= n.at); }
+function merPts() { return S.L * CFG.meridian.ptsPerLevel; }
+function merFree() { const m = S.mer || {}; return Math.max(0, merPts() - (m.atk || 0) - (m.hp || 0) - (m.spd || 0)); }
+function merAdd(line, n = 1) { n = Math.min(n, merFree()); if (n <= 0) return log('没有可分配的经脉点（每突破一层得 1 点）。', 'warn'); S.mer[line] += n; const nd = CFG.meridian.lines[line].nodes.find(x => S.mer[line] >= x.at && S.mer[line] - n < x.at); log(`${CFG.meridian.lines[line].name} +${n}（${S.mer[line]}）${nd ? '，冲开窍穴「' + nd.name + '」：' + nd.desc : ''}`, nd ? 'big' : 'gain'); }
+function merRespecCost() { return S.mer.respec ? Math.floor(monLingshi(S.L) * 60) : 0; }
+function merRespec() { const c = merRespecCost(); if (S.lingshi < c) return log('灵石不足，无法洗点。', 'warn'); S.lingshi -= c; S.mer.atk = S.mer.hp = S.mer.spd = 0; S.mer.respec = (S.mer.respec || 0) + 1; log(`经脉重置${c ? '，花费灵石 ' + fmt(c) : '（首次免费）'}，可重新分配。`, 'gain'); }
+function affLv() { const a = (S.comp && S.comp.aff) || 0, L = CFG.affinity.levels; let i = 0; while (i + 1 < L.length && a >= L[i + 1]) i++; return i; }
+function addAff(v) { const l0 = affLv(); S.comp.aff = (S.comp.aff || 0) + v; const l1 = affLv(); if (l1 > l0) log(`与 ${S.comp.name} 的好感提升至「${CFG.affinity.names[l1]}」：${CFG.affinity.perks[l1]}`, 'big'); }
+function giftComp(kind) {
+  const G = CFG.affinity.gift;
+  if (kind === 'ls') { if (S.daily.gift >= G.daily) return log('今日灵石赠礼次数已满。', 'warn'); const c = Math.floor(monLingshi(S.L) * G.lsSec); if (S.lingshi < c) return log('灵石不足。', 'warn'); S.lingshi -= c; S.daily.gift++; log(`赠予 ${S.comp.name} 灵石 ${fmt(c)}，好感 +${G.lsAff}`, 'gain'); addAff(G.lsAff); }
+  else { if (S.daily.giftH >= G.daily) return log('今日药草赠礼次数已满。', 'warn'); if (S.herbs < 1) return log('没有不老根。', 'warn'); S.herbs--; S.daily.giftH++; log(`赠予 ${S.comp.name} 不老根 ×1，好感 +${G.herbAff}`, 'gain'); addAff(G.herbAff); }
+}
+function bondOf(a, b) { if (!a || !b) return null; return CFG.bonds.find(x => (x.a === a.sp && x.b === b.sp) || (x.a === b.sp && x.b === a.sp)) || null; }
+function charStats(sect, who) { // 玩家与同伴共用：境界、装备、强化完全同步，只有宗门不同；who='me' 加经脉，'comp' 加好感
   const s = baseStats(S.L);
   for (const k of CFG.gear.slots) { const it = S.equip[k]; if (it) { const t = itemStats(it, S.enh[k] || 0); s.atk += t.atk; s.hp += t.hp; s.spd += t.spd; } }
   if (sect === '一剑宗') s.atk *= 1 + CFG.sects['一剑宗'].selfAtk;
+  if (who === 'me' && S.mer) { const M = CFG.meridian.lines; for (const k of ['atk', 'hp', 'spd']) { let m = 1 + (S.mer[k] || 0) * M[k].per; merNodes(k).forEach(n => { if (n.pct) m *= 1 + n.pct; }); s[k] *= m; } }
+  if (who === 'comp') { const l = affLv(); if (l >= 1) s.atk *= 1 + CFG.affinity.compAtk; if (l >= 2) s.hp *= 1 + CFG.affinity.compHp; }
   return s;
 }
-const playerStats = () => charStats(S.sect), compStats = () => charStats(S.comp.sect);
+const playerStats = () => charStats(S.sect, 'me'), compStats = () => charStats(S.comp.sect, 'comp');
 /* 改投宗门：玩家与同伴都可随时免费更换，技能与被动立即生效 */
 function changeSect(who, sect) {
   if (!CFG.sects[sect]) return;
@@ -825,8 +880,13 @@ function renameComp(n) { n = String(n || '').trim().slice(0, CFG.comp.nameMax); 
 const unit = (name, s, sect, side, look, L = 0) => ({ name, hp: s.hp, max: s.hp, atk: s.atk, spd: s.spd, sect, side, t: 0, L, look: look || { type: side ? 'spirit' : 'human', c: '#555', sect } });
 function buildAllies(mercMul) {
   const a = [], add = (u, pet) => { a.push(u); if (pet) a.push(petUnit(pet, u)); }; // 每个角色携带 1 只灵宠出战（属性按主人总属性）
-  add(unit(S.name, playerStats(), S.sect, 0, { type: 'human', sect: S.sect, me: true }, S.L), myPet());
-  add(unit(S.comp.name, compStats(), S.comp.sect, 0, { type: 'human', sect: S.comp.sect, comp: true }, S.L), compPet()); // 同伴：与玩家同步境界与装备
+  const me = unit(S.name, playerStats(), S.sect, 0, { type: 'human', sect: S.sect, me: true }, S.L), cu = unit(S.comp.name, compStats(), S.comp.sect, 0, { type: 'human', sect: S.comp.sect, comp: true }, S.L);
+  if (S.mer) for (const k of ['atk', 'hp', 'spd']) merNodes(k).forEach(n => { if (n.crit) { me.crit = (me.crit || 0) + n.crit; me.critMul = 1.6; } if (n.eliteDmg) me.eliteDmg = n.eliteDmg; if (n.dr) me.pdr = (me.pdr || 1) * (1 - n.dr); if (n.regen) me.regen = n.regen; if (n.dodge) me.dodge = n.dodge; if (n.extra) me.extraA = n.extra; });
+  if (affLv() >= 3) me.heji = cu;
+  add(me, myPet());
+  add(cu, compPet()); // 同伴：与玩家同步境界与装备
+  const bd = bondOf(myPet(), compPet());
+  if (bd) a.forEach(u => { if (bd.atk) u.atk *= 1 + bd.atk; if (bd.hp) { u.hp *= 1 + bd.hp; u.max = u.hp; } if (bd.spd) u.spd *= 1 + bd.spd; if (bd.dr) u.pdr = (u.pdr || 1) * (1 - bd.dr); if (bd.crit && !u.crit) { u.crit = bd.crit; u.critMul = 1.5; } });
   if (mercMul) for (const h of S.hired.slice(0, CFG.tower.mercMax)) { const b = BOTS[h.bot]; add(unit(b.name + '(佣兵)', botStats(b, CFG.merc.copy[b.tier]), b.sect, 0, { type: 'human', sect: b.sect, hv: hvOf(b.name) }, b.L), b.pet); } // 佣兵带自己的灵宠
   return a;
 }
@@ -857,13 +917,17 @@ function fight(allies, enemies, maxRounds, rec) {
     push({ a: t.ix, k: 'skill', s: 'bomb', t: tl });
   };
   const hit = (u, t, mul) => {
-    let v = u.atk * mul * (0.9 + R() * 0.2) * (t.vulnTo >= round ? 1 + t.vulnMul : 1) * (u.side === 1 ? dr * allyDR * (t.pdr || 1) : allyDmg) * (1 - (t.mdr || 0)) * (t.gateDR || 1);
+    if (u.spd && t.spd && R() < dodgeP(u, t)) return 0; // 身法闪避
+    let v = u.atk * mul * (0.9 + R() * 0.2) * (t.vulnTo >= round ? 1 + t.vulnMul : 1) * (u.side === 1 ? dr * allyDR * (t.pdr || 1) : allyDmg) * (1 - (t.mdr || 0)) * (t.gateDR || 1) * (u.eliteDmg && (t.boss || (t.look && t.look.elite)) ? 1 + u.eliteDmg : 1);
     if (u.crit && R() < u.crit) v *= u.critMul;
     if (t.shield > 0) { const ab = Math.min(t.shield, v); t.shield -= ab; v -= ab; }
     t.hp -= v; if (t.hp <= 0 && t.aff && t.aff.includes('bomb') && !t._bombed) doBomb(t);
     if (u.side === 1 && t.counter && t.hp > 0) counters.push([t, u]);
     return v;
   };
+  const SPD = CFG.speed, avgSpd = arr => arr.reduce((q, x) => q + x.spd, 0) / Math.max(1, arr.length), sAvg = [avgSpd(allies), avgSpd(enemies)];
+  const dodgeP = (u, t) => Math.min(SPD.dodgeCap, Math.max(0, (t.spd / u.spd - 1) * SPD.dodgeK)) + (t.dodge || 0);
+  const extraP = u => Math.min(SPD.extraCap, Math.max(0, (u.spd / sAvg[1 - u.side] - 1) * SPD.extraK)) + (u.extraA || 0);
   const vuln = (t, k) => { t.vulnMul = t.vulnTo >= round ? Math.max(t.vulnMul, k.vuln) : k.vuln; t.vulnTo = Math.max(t.vulnTo, round + k.vulnR); };
   const ready = (u, k) => (u.cdu[k.id] || 0) <= round;
   const use = (u, k) => { u.cdu[k.id] = round + k.cd; };
@@ -914,11 +978,11 @@ function fight(allies, enemies, maxRounds, rec) {
     const a = CFG.affix.types.rage; if (u.hp > 0 && u.hp <= u.max * a.hpTrig) { u._raged = true; u.atk *= 1 + a.atkMul; push({ a: u.ix, k: 'skill', s: 'rage', buff: 1, t: [[u.ix, 0]] }); }
   }
   function tryMonHeal(u) {
-    if (!u.aff || !u.aff.includes('heal')) return false;
+    if (!u.aff || !u.aff.includes('heal') || (u.healN || 0) >= CFG.affix.healUses) return false;
     const cd = { id: 'mheal', cd: CFG.affix.types.heal.cd }; if (!ready(u, cd)) return false;
     const mates = alive(side(u)), low = mates.slice().sort((x, y) => x.hp / x.max - y.hp / y.max)[0];
     if (!low || low.hp > low.max * 0.75) return false;
-    use(u, cd); const v = Math.min(low.max - low.hp, low.max * CFG.affix.types.heal.heal); low.hp += v;
+    use(u, cd); u.healN = (u.healN || 0) + 1; const v = Math.min(low.max - low.hp, low.max * CFG.affix.types.heal.heal); low.hp += v;
     push({ a: u.ix, k: 'skill', s: 'mheal', heal: 1, t: [[low.ix, v]] }); return true;
   }
   function tryGateSkill(u, foes) {
@@ -941,6 +1005,7 @@ function fight(allies, enemies, maxRounds, rec) {
     if (trySupport(u)) return;
     if (u.side === 1 && tryMonHeal(u)) return;
     if (u.side === 1 && tryGateSkill(u, foes)) return;
+    if (u.heji && u.heji.hp > 0 && ready(u, { id: 'heji' }) && foes.length >= 1 && round >= 2) { const H = CFG.affinity.heji; use(u, { id: 'heji', cd: H.cd }); const c2 = u.heji; push({ a: u.ix, k: 'skill', s: 'heji', t: foes.map(f => [f.ix, hit(u, f, H.mul) + hit(c2, f, H.mul)]) }); return; }
     if (u.side === 0 && u.sect === '道天宗') { const low = alive(allies).filter(x => x.hp < x.max * 0.5).sort((x, y) => x.hp / x.max - y.hp / y.max)[0]; if (low) { const v = Math.min(low.max - low.hp, u.atk * 1.5); low.hp += v; push({ a: u.ix, k: 'heal', t: [[low.ix, v]] }); return; } }
     const opts = dmgOpts(u, foes, extra); opts.push(basicOpt(u, foes));
     const b = pickBest(opts); u.lastAI = b.id; b.go();
@@ -969,7 +1034,9 @@ function fight(allies, enemies, maxRounds, rec) {
       if (u.hp <= 0) continue;
       const foes = alive(opp(u)); if (!foes.length) break;
       u.t++; counters.length = 0;
+      if (u.regen && u.hp > 0 && u.hp < u.max) { const hv = Math.min(u.max - u.hp, u.max * u.regen); u.hp += hv; }
       if (u.pet) petAct(u, foes); else act(u, foes, false);
+      if (u.hp > 0 && !u.aff && R() < extraP(u)) { const f2 = alive(opp(u)); if (f2.length) { if (u.pet) petAct(u, f2); else act(u, f2, true); } }
       if (u.hp > 0 && u.aff && u.aff.includes('swift') && R() < CFG.affix.types.swift.double) { const f2 = alive(opp(u)); if (f2.length) { if (u.pet) petAct(u, f2); else act(u, f2, true); } }
       while (counters.length) { const [pt, en] = counters.shift(); if (pt.hp > 0 && en.hp > 0 && R() < pt.counter) push({ a: pt.ix, k: 'pskill', s: 'counter', t: [[en.ix, hit(pt, en, pt.cmul)]] }); }
     }
@@ -1003,7 +1070,8 @@ function monThreat(u) { if (!u.aff) return 0; const T = CFG.affix.types; return 
 function monGroup(map) {
   const n = rint(map.nMin, map.nMax), a = [];
   for (let i = 0; i < n; i++) {
-    const aff = rollAffixes(map.realm), look = { type: map.look.type, c: map.look.c, elite: map.elite, aff };
+    let aff = rollAffixes(map.realm); if (aff.length && a.filter(x => x.aff && x.aff.length).length >= CFG.affix.maxPerPack) aff = [];
+    const look = { type: map.look.type, c: map.look.c, elite: map.elite, aff };
     const u = unit(affixName(map.mon, aff), monStats(map.ml, map.elite), null, 1, look);
     u.aff = aff; applyAffixStats(u); a.push(u);
   }
@@ -1050,6 +1118,7 @@ function startFieldBattle() {
     for (let i = 0; i < r.kills; i++) if (R() < CFG.field.dropRate * fm.gear) st.items.push(rollItem(map.ml));
     for (let i = 0; i < r.kills; i++) { if (R() < CFG.pet.fanDrop * fm.egg) st.fan++; if (map.elite && R() < CFG.pet.lingElite * fm.egg) st.ling++; }
     if (R() < CFG.field.herbRate) st.herb = 1;
+    const AL = CFG.affix.loot; st.affE = 0; st.affL = 0; rec.units.forEach(u => { if (u.side === 1 && u.aff && u.aff.length) u.aff.forEach(id => { if (id === 'bomb') st.affL += AL.bomb.ls; else if (id === 'heal') st.affE += AL.heal.exp; else st.affE += AL.other.exp; }); });
   }
   rec.id = st.id; rec.win = r.win;
   FB = { phase: 'fight', id: st.id, t: 0, dur: battleSec(rec.ev), rec, st, hold: 0, last: FB ? FB.last : null };
@@ -1062,8 +1131,9 @@ function settleField() {
   if (st.win) {
     S.stats.wins++; S.stats.kills += st.kills;
     const fm = mapMul(map);
-    const e = monExp(map.ml) * st.kills * fieldMult() * fm.exp, x0 = S.exp; gainExp(e); out.expRaw = e; out.exp = S.exp - x0;
-    const ls = Math.floor(monLingshi(map.ml) * st.kills * fm.ls); S.lingshi += ls; out.ls = ls;
+    const e = monExp(map.ml) * (st.kills + (st.affE || 0)) * fieldMult() * fm.exp, x0 = S.exp; gainExp(e); out.expRaw = e; out.exp = S.exp - x0;
+    const ls = Math.floor(monLingshi(map.ml) * (st.kills + (st.affL || 0)) * fm.ls); S.lingshi += ls; out.ls = ls; out.affB = (st.affE || st.affL) ? 1 : 0;
+    addAff(CFG.affinity.perWin);
     for (const it of st.items) { const r = addItem(it, true); out.sell += r.sell; out.items.push({ name: itemName(it), q: it.q, to: r.to }); if (it.q >= 3) log(`${map.name} 掉落 ${itemName(it)}！`, 'rare'); }
     S.eggs.fan += st.fan; S.eggs.ling += st.ling; S.herbs += st.herb;
     if (st.ling) log(`${map.name} 精英妖兽掉落 灵蛋！`, 'rare');
@@ -1125,7 +1195,7 @@ function stepSim(s) {
 function advance(dt) { let rem = dt; while (rem > 0) { const s = Math.min(5, rem); rem -= s; stepSim(s); } }
 function checkDaily(force) {
   const d = force === 'sim' ? 'sim' + Math.floor(S.serverT / 86400) : today();
-  if (force || S.daily.date !== d) { S.daily = { date: d, signed: false, towerLeft: CFG.tower.daily, xiuwei: 0, watchLeft: CFG.watch.daily, merc: false }; if (S.created) log('新的一天开始了：签到、锁妖塔、修为丹、围观次数已重置。', 'sys'); }
+  if (force || S.daily.date !== d) { S.daily = { date: d, signed: false, towerLeft: CFG.tower.daily, xiuwei: 0, watchLeft: CFG.watch.daily, merc: false, gift: 0, giftH: 0 }; if (S.created) log('新的一天开始了：签到、锁妖塔、修为丹、围观次数已重置。', 'sys'); }
 }
 /* 结算一段时间 c 秒（期望值 + 抽样战斗），离线与时间线模拟共用 */
 function settleChunk(c, acc, N = 20) {
@@ -1136,11 +1206,12 @@ function settleChunk(c, acc, N = 20) {
   for (let i = 0; i < N; i++) { const rec = {}, r = fight(buildAllies(false), monGroup(map), F.maxRounds, rec); cyc += battleSec(rec.ev) + F.endSec + (r.win ? F.searchBetween : F.lossRest); if (r.win) { w++; k += r.kills; } }
   const wr = w / N, avgK = w ? k / w : 0, sr0 = v => Math.floor(v) + (R() < v % 1 ? 1 : 0);
   const battles = sr0(c / (cyc / N)), wins = sr0(battles * wr), kills = wins * avgK;
-  const fm = mapMul(map);
-  const ex = monExp(map.ml) * kills * fm.exp;
+  const fm = mapMul(map), A = CFG.affix, pa = A.chance[Math.min(9, map.realm)] * (1 + A.dual), nT = Object.keys(A.types).length; // 词缀额外奖励按期望
+  const affE = kills * pa * (A.loot.heal.exp + A.loot.other.exp * (nT - 2)) / nT, affL = kills * pa * A.loot.bomb.ls / nT;
+  const ex = monExp(map.ml) * (kills + affE) * fm.exp;
   const fE = ex * fieldBase() + ex * CFG.buff.bonus * (fieldB / c);
   const sr = v => Math.floor(v) + (R() < v % 1 ? 1 : 0);
-  S.lingshi += Math.floor(monLingshi(map.ml) * kills * fm.ls);
+  S.lingshi += Math.floor(monLingshi(map.ml) * (kills + affL) * fm.ls); addAff(wins * CFG.affinity.perWin);
   const drops = sr(kills * CFG.field.dropRate * fm.gear);
   for (let i = 0; i < drops; i++) { const it = rollItem(map.ml); if (acc.items < 15) { addItem(it, true); acc.items++; } else { S.lingshi += sellPrice(it); acc.sold++; } }
   S.herbs += sr(wins * CFG.field.herbRate);
@@ -1186,7 +1257,7 @@ function onLevelUp() {
 function tribInit() {
   if (S.trib && S.trib.L === S.L) return S.trib;
   const near = BOTS.filter(b => botActive(b) && Math.abs(b.L - S.L) <= 15);
-  let n = 2 + CFG.trib.compSpectators + rint(0, 3); // 同伴到场护法，带来人气
+  let n = 2 + CFG.trib.compSpectators + rint(0, 3) + (affLv() >= 4 ? CFG.affinity.tribSpec : 0); // 同伴到场护法，带来人气；生死之交再带 1 人
   const rank = playerRank(); if (rank > 0 && rank <= 50) n += 2;
   n += Math.min(3, Object.values(S.botAff).filter(v => v >= 3).length);
   n = Math.min(CFG.trib.maxSpectators, n);
@@ -1195,13 +1266,19 @@ function tribInit() {
   S.trib = { L: S.L, specs: specs.slice(0, CFG.trib.maxSpectators), pills: 0, invites: 0 };
   return S.trib;
 }
-function tribRate() { const t = S.trib; return Math.min(CFG.trib.maxRate, CFG.trib.base + t.specs.length * CFG.trib.perSpectator + t.pills * CFG.trib.pillBonus + Math.min(CFG.trib.xinmoCap, S.xinmo || 0) * CFG.trib.xinmoBonus); }
+function tribRate() { const t = S.trib; return Math.min(CFG.trib.maxRate, CFG.trib.base + t.specs.length * CFG.trib.perSpectator + t.pills * CFG.trib.pillBonus + Math.min(CFG.trib.xinmoCap, S.xinmo || 0) * CFG.trib.xinmoBonus + (affLv() >= 4 ? CFG.affinity.tribRate : 0)); }
 function gateBossOf(L) { const r = Math.min(CFG.gate.bosses.length - 1, Math.floor(L / 10)); return CFG.gate.bosses[r]; }
 function isGateDone(L) { return !!(S.gateClear && S.gateClear[L]); }
+function gateTier(L) { const r = Math.floor(L / 10), T = CFG.gate.tiers; return r >= T[1] ? 2 : r >= T[0] ? 1 : 0; }
+function gateLook(L) { const t = gateTier(L); return { type: 'xinmo', tier: t, c: ['#4a3a8a', '#8a2040', '#2a1f36'][t], boss: true }; }
 function buildGateBoss(L) {
-  const b = gateBossOf(L), ps = playerStats();
-  const st = { hp: ps.hp * 2 * b.hp, atk: ps.atk * b.atk, spd: ps.spd * 1.06 };
-  const u = unit(b.name, st, null, 1, { type: 'spirit', c: '#5a2040', elite: true, boss: true });
+  /* 基准 = 同境界标准单位（monStats，含平均灵品宠）× 2 人份；用玩家实际装备与基准的比值做温和修正（√），装备好打得更轻松但不是碾压 */
+  /* 心魔随你的队伍实力而长（幂 teamExp<1：实力越强越占优，但不会碾压），每次挑战另有 ±var 的心境浮动 */
+  const G = CFG.gate, b = gateBossOf(L), ref = refStats(L), ps = playerStats(), team = buildAllies(false);
+  const pw = team.reduce((q, u) => q + Math.sqrt(u.atk * u.hp), 0) / (G.refUnits * Math.sqrt(ref.atk * ref.hp));
+  const sc = Math.pow(pw, G.teamExp) * (1 + (R() * 2 - 1) * G.var);
+  const st = { hp: ref.hp * 2 * b.hp * sc * G.hpMul, atk: ref.atk * b.atk * sc * G.atkMul, spd: ps.spd * 1.02 };
+  const u = unit(b.name, st, null, 1, gateLook(L));
   u.boss = true; u.gateSk = Object.assign({ id: b.skill }, CFG.gate.skills[b.skill]); u.L = L;
   return u;
 }
@@ -1381,6 +1458,7 @@ function load() {
   if (!o) { S = null; return false; }
   const d = newState(o.name, o.sect); S = Object.assign(d, o); S.daily = Object.assign(d.daily, o.daily || {}); S.pills = Object.assign(d.pills, o.pills || {}); S.buffs = Object.assign(d.buffs, o.buffs || {}); S.eggs = Object.assign(d.eggs, o.eggs || {}); S.petStat = Object.assign(d.petStat, o.petStat || {}); if (!Array.isArray(S.pets)) S.pets = []; S.pets.forEach(p => ensureApt(p)); // 旧存档迁移：补齐灵宠字段；旧灵宠补随机资质（攻/血系数）
   if (!S.enhFail) S.enhFail = { weapon: 0, armor: 0, shoes: 0, ring: 0 }; // 旧存档迁移：保底计数
+  if (!S.mer) S.mer = { atk: 0, hp: 0, spd: 0, respec: 0 }; if (S.comp.aff == null) S.comp.aff = 0; if (S.daily.gift == null) S.daily.gift = 0; if (S.daily.giftH == null) S.daily.giftH = 0;
   if (S.xinmo == null) S.xinmo = 0; if (!S.gateClear) S.gateClear = {}; if (S.gateCdT == null) S.gateCdT = 0;
   if (!o.comp) S.comp = newComp(S.sect); else S.comp = Object.assign(newComp(S.sect), o.comp); // 旧存档迁移：假人队伍 → 同伴
   S.team = []; S.hired = (S.hired || []).slice(0, CFG.tower.mercMax); if (S.comp.petOn === S.petOn) S.comp.petOn = 0; if (S.comp.petOn && !S.pets.some(p => p.uid === S.comp.petOn)) S.comp.petOn = 0;
@@ -1610,7 +1688,7 @@ const FX = (() => {
   /* 妖兽 Q 版（面朝左，脚底为原点）：圆润体块、赛璐珞阴影、大眼高光；精英怒眉、獠牙、角 */
   function drawMon(c, look) {
     const base = vivid(look.c || '#888'), shd = shade(base, -0.3), lt = shade(base, 0.4), pale = shade(base, 0.72), el = !!look.elite;
-    const iris = el ? '#ff3a3a' : look.v === 2 ? '#ff5a2a' : look.v ? '#ffb020' : { wolf: '#ffc23a', fox: '#ffcf3a', boar: '#7a4a2a', crane: '#2a2a3a', turtle: '#4ac08a', ape: '#ffa020', worm: '#2a6aff', serpent: '#ffd23a', eagle: '#ffb020', lizard: '#ffd23a', spider: '#ff4a8a', golem: '#5ae0ff', spirit: '#c58aff' }[look.type] || '#ffb020';
+    const iris = el ? '#ff3a3a' : look.v === 2 ? '#ff5a2a' : look.v ? '#ffb020' : { wolf: '#ffc23a', fox: '#ffcf3a', boar: '#7a4a2a', crane: '#2a2a3a', turtle: '#4ac08a', ape: '#ffa020', worm: '#2a6aff', serpent: '#ffd23a', eagle: '#ffb020', lizard: '#ffd23a', spider: '#ff4a8a', golem: '#5ae0ff', spirit: '#c58aff', xinmo: ['#c06aff', '#ff2a4a', '#ffd23a'][look.tier || 0] }[look.type] || '#ffb020';
     const E = (x, y, s, o = {}) => aEye(c, x, y, s * 1.12, s * 1.34, iris, Object.assign({ dir: -1, angry: el }, o));
     const C = (f, b, s, dx = 2.4, dy = 2, lw = 1) => cel(c, f, b || base, s || shd, dx, dy, lw);
     const blush = (x, y, r = 2.4) => { c.fillStyle = BLUSH; ell(c, x, y, r, r * 0.55); c.fill(); };
@@ -1760,6 +1838,33 @@ const FX = (() => {
         for (const fx of [-14, -9]) C(() => { c.moveTo(fx - 1.2, -12); c.quadraticCurveTo(fx - 2, -8, fx, -6); c.quadraticCurveTo(fx + 0.6, -9, fx + 1.2, -12); c.closePath(); }, '#fff', '#ddd', 0.3, 0.3, 0.7);
         break;
       }
+      case 'xinmo': { // 心魔：主角的暗影倒影（按境界阶 tier 0 紫 / 1 赤 / 2 黑金），朝左
+        const tr = look.tier || 0, robe = ['#4a3a8a', '#8a2040', '#2a1f36'][tr], trim = ['#b48cff', '#ff6a8a', '#ffd15a'][tr], hair = ['#ece8ff', '#2a1020', '#f4f0ff'][tr], ir = ['#c06aff', '#ff2a4a', '#ffd23a'][tr];
+        // 背后魔焰 / 羽翼
+        c.save(); c.globalAlpha = 0.55; for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i - 2) * 0.42; C(() => { c.moveTo(0, -60); c.quadraticCurveTo(Math.cos(a) * 30, -60 + Math.sin(a) * 30, Math.cos(a) * (48 + tr * 8), -62 + Math.sin(a) * (44 + tr * 8)); c.quadraticCurveTo(Math.cos(a) * 26 + 6, -58 + Math.sin(a) * 22, 4, -56); c.closePath(); }, trim, shade(trim, -0.35), 1, 0, 0.6); } c.restore();
+        if (tr >= 1) for (const d of [-1, 1]) C(() => { c.moveTo(d * 8, -66); c.bezierCurveTo(d * 40, -96, d * 62, -70, d * 66, -40); c.bezierCurveTo(d * 46, -52, d * 34, -46, d * 12, -50); c.closePath(); }, shade(robe, -0.2), shade(robe, -0.5), 2, 1.5, 0.9);
+        // 长袍（下摆碎裂成烟）
+        C(() => { c.moveTo(-14, -56); c.quadraticCurveTo(-22, -24, -26, 0); for (let k = 0; k < 6; k++) { c.lineTo(-26 + k * 9 + 4.5, -7 - (k % 2) * 3); c.lineTo(-26 + (k + 1) * 9, 0); } c.quadraticCurveTo(22, -24, 14, -56); c.closePath(); }, robe, shade(robe, -0.35), 3, 2, 1);
+        C(() => { c.moveTo(-3, -56); c.lineTo(3, -56); c.lineTo(6, -6); c.lineTo(-6, -6); c.closePath(); }, trim, shade(trim, -0.3), 1, 0, 0.8);
+        C(() => { c.rect(-16, -38, 32, 4); }, trim, shade(trim, -0.3), 0, 1, 0.8);
+        // 魔爪 / 剑
+        C(() => { c.moveTo(-14, -48); c.quadraticCurveTo(-28, -40, -34, -30); c.lineTo(-29, -27); c.quadraticCurveTo(-22, -36, -10, -42); c.closePath(); }, robe, shade(robe, -0.35), 1.4, 1, 0.9);
+        C(() => { c.moveTo(-34, -30); c.lineTo(-62, -58); c.lineTo(-60, -61); c.lineTo(-31, -33); c.closePath(); }, '#2a2233', '#120c18', 0, 0, 0.8);
+        c.strokeStyle = trim; c.lineWidth = 1.4; c.beginPath(); c.moveTo(-36, -33); c.lineTo(-60, -58); c.stroke();
+        // 头
+        C(() => { ell(c, 0, -72, 15, 16); }, '#e8dcf0', '#b8a6c8', 2, 1.6, 1);
+        // 角
+        if (tr >= 0) horns(0, -84, 1 + tr * 0.25);
+        // 头发：尖刺狂发
+        C(() => { c.moveTo(-17, -70); for (let k = 0; k <= 8; k++) { const a = Math.PI + k / 8 * Math.PI, r = k % 2 ? 19 : 27 + tr * 2; c.lineTo(Math.cos(a) * r, -74 + Math.sin(a) * r * 0.95); } c.lineTo(17, -70); c.quadraticCurveTo(0, -78, -17, -70); c.closePath(); }, hair, shade(hair, -0.35), 2, 1.5, 1);
+        C(() => { c.moveTo(-15, -72); c.lineTo(-10, -62); c.lineTo(-7, -72); c.lineTo(-2, -64); c.lineTo(1, -73); c.lineTo(5, -66); c.lineTo(8, -74); c.closePath(); }, hair, shade(hair, -0.35), 1, 1, 0.8);
+        E(-8, -68, 4.6, { angry: true }); E(3, -68.5, 3.6, { angry: true });
+        c.strokeStyle = OL; c.lineWidth = 1; c.beginPath(); c.moveTo(-6, -60); c.quadraticCurveTo(-2, -58, 2, -60.5); c.stroke(); fang(-3, -60, 0.6);
+        // 额纹
+        c.fillStyle = ir; c.beginPath(); c.moveTo(-2, -82); c.lineTo(0, -77); c.lineTo(2, -82); c.lineTo(0, -80); c.closePath(); c.fill();
+        if (tr === 2) { C(() => { c.moveTo(-10, -88); c.lineTo(-6, -98); c.lineTo(-2, -90); c.lineTo(0, -102); c.lineTo(2, -90); c.lineTo(6, -98); c.lineTo(10, -88); c.closePath(); }, '#ffd15a', '#c08a20', 1, 1, 0.8); }
+        break;
+      }
       case 'golem': {
         const rock = (pts, b2) => C(() => { pts.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); c.closePath(); }, b2 || base, shd, 2, 2);
         rock([[-14, -24], [-3, -24], [-3, -1], [-15, -1]]); rock([[5, -24], [16, -24], [17, -1], [5, -1]]);
@@ -1846,7 +1951,7 @@ const FX = (() => {
     c.restore();
   }
   /* 各物种眼睛（设计坐标，供妖兽眼光实时绘制） */
-  const EYE = { wolf: [[-19.5, -40], [-9.5, -40.5]], fox: [[-19.5, -40], [-9.5, -40.5]], boar: [[-15, -31], [-6.5, -31.5]], crane: [[-12, -61]], turtle: [[-27, -21], [-18.5, -21.5]], lizard: [[-20, -24], [-10.5, -24.5]], ape: [[-12.5, -45.5], [-3.5, -46]], golem: [[-7, -69], [4, -69]], spider: [[-13, -20], [-4, -20.5]], worm: [[-21, -21], [-11, -21.5]], serpent: [[-19, -54], [-9.5, -54.5]], eagle: [[-10, -52], [-2, -52.5]], spirit: [[-7, -34], [4, -34]] };
+  const EYE = { wolf: [[-19.5, -40], [-9.5, -40.5]], fox: [[-19.5, -40], [-9.5, -40.5]], boar: [[-15, -31], [-6.5, -31.5]], crane: [[-12, -61]], turtle: [[-27, -21], [-18.5, -21.5]], lizard: [[-20, -24], [-10.5, -24.5]], ape: [[-12.5, -45.5], [-3.5, -46]], golem: [[-7, -69], [4, -69]], spider: [[-13, -20], [-4, -20.5]], worm: [[-21, -21], [-11, -21.5]], serpent: [[-19, -54], [-9.5, -54.5]], eagle: [[-10, -52], [-2, -52.5]], spirit: [[-7, -34], [4, -34]], xinmo: [[-8, -68], [3, -68.5]] };
 
   /* ---------- 背景：二次元赛璐珞场景（渐变天空、积云、平涂远山、圆冠树、草地）；按地图配色 ---------- */
   const ANI = [
@@ -2111,6 +2216,8 @@ const FX = (() => {
   }
   const evDur = () => CFG.field.evSec;
   const SKDEF = {}; for (const [sect, arr] of Object.entries(CFG.skills)) arr.forEach(k => SKDEF[k.id] = Object.assign({ sect }, k));
+  Object.assign(SKDEF, { heji: { name: CFG.affinity.heji.name, sect: '一剑宗' }, bomb: { name: '自爆', sect: '魔天宗' }, mheal: { name: '妖疗', sect: '道天宗' }, rage: { name: '狂暴', sect: '魔天宗' } });
+  Object.entries(CFG.gate.skills || {}).forEach(([k, v]) => { if (!SKDEF[k]) SKDEF[k] = { name: v.name || k, sect: '魔天宗' }; });
   const SKCOL = { '一剑宗': '#2f5f9a', '魔天宗': '#7a1f3a', '道天宗': '#2e7d3a' };
   const evD = ev => evSec(ev); // 每个事件的播放时长与逻辑计时（battleSec）完全相同
   const PFX = { chongzhen: 'shock', huliao: 'fire', hanshuang: 'frost', sweep: 'burst', tongbi: 'impact', tunhai: 'wave', leiji: 'thunder', bite: 'claw', venom: 'venom', charge: 'impact', counter: 'slash' };
@@ -2154,7 +2261,7 @@ const FX = (() => {
         for (const [ti, v] of ev.t) {
           const u = bv.units[ti];
           if (ev.buff) { addFloat('易伤', u.x, u.y - u.h * 0.7, '#7a3fa0', 14, 1.0); effs.push({ type: 'soulmark', x: u.x, y: u.y - u.h * 0.45, s: u.h * 0.8, t: 0, dur: 0.5 }); continue; }
-          if (ev.k === 'dot') { u.hp -= v; addFloat('-' + fmt(v), u.x, u.y - u.h * 0.5, '#c06a1a', 14, 0.9, 'dmg'); effs.push({ type: 'fire', x: u.x, y: u.y - u.h * 0.1, s: u.h * 0.7, t: 0, dur: 0.45 }); if (u.hp <= 0 && u.alive) { u.alive = false; u.die = 0; } continue; }
+          if (ev.k === 'dot') { u.hp -= v; addFloat(v ? '-' + fmt(v) : '闪避', u.x, u.y - u.h * 0.5, '#c06a1a', 14, 0.9, 'dmg'); effs.push({ type: 'fire', x: u.x, y: u.y - u.h * 0.1, s: u.h * 0.7, t: 0, dur: 0.45 }); if (u.hp <= 0 && u.alive) { u.alive = false; u.die = 0; } continue; }
           if (ev.revive) { u.alive = true; u.die = -1; u.hp = v; u.shown = 0; addFloat('复活 +' + fmt(v), u.x + u.h * 0.32, u.y - u.h * 0.62, '#2e8b3a', 19, 1.6); continue; }
           if (ev.k === 'heal' || ev.heal) { if (ev.heal && v <= 0) continue; u.hp = Math.min(u.max, u.hp + v); addFloat('+' + fmt(v), u.x + u.h * 0.32, u.y - u.h * 0.62, '#1f9a3a', ev.heal ? 19 : 16, 1.2, 'heal'); if (ev.heal) effs.push({ type: 'greenglow', x: u.x, y: u.y - u.h * 0.45, s: u.h, t: 0, dur: 0.8 }); for (let k = 0; k < 10; k++) addPart({ x: u.x + rnd(-16, 16), y: u.y - rnd(0, u.h * 0.8), vx: 0, vy: -rnd(20, 50), life: 0, max: rnd(0.6, 1.1), size: rnd(1.5, 3), color: 'rgba(240,200,90,.9)' }); continue; }
           const bigHit = ev.k === 'skill' || (ev.k === 'pskill' && CFG.pet.ex[ev.s]); u.hp -= v; u.flash = 1; u.hit = 0; u.hitT = time; u.hitDir = u.side === 1 ? 1 : -1; addFloat('-' + fmt(v), u.x + (u.side ? -1 : 1) * u.h * 0.34 + rnd(-6, 6), u.y - u.h * 0.6 + rnd(-6, 6), u.side === 0 ? '#c0392b' : (ev.k === 'aoe' ? '#d4741c' : '#b2221a'), bigHit ? 21 : ev.k === 'aoe' ? 18 : 16, bigHit ? 1.35 : 1.1, bigHit ? 'big' : 'dmg'); sparks(u.x, u.y - u.h * 0.45, bigHit ? 6 : 3, u.side === 0 ? '255,170,150' : bigHit ? '255,220,140' : '235,240,255'); if (ev.k === 'skill') effs.push({ type: 'ring', x: u.x, y: u.y, s: u.h * 0.7, col: 'rgba(255,225,160,.6)', t: 0, dur: 0.45 });
@@ -2438,7 +2545,7 @@ const FX = (() => {
       const sig = [rt, t.specs.length, t.pills, t.invites, S.pills.trib, cd ? fmtT(S.tribCooldownT - S.serverT) : '', done, gcd, S.xinmo || 0].join('|');
       if (u.dataset.sig === sig && u.firstChild) return; u.dataset.sig = sig;
       if (!done) {
-        u.innerHTML = `<div class="info">渡劫之前须先破心魔<br><b>${gb.name}</b> · ${gb.desc}<br>玩家 + 同伴 + 灵宠挑战（失败仅冷却，不扣修为）${gcd ? '<br>心魔反噬，还需调息 ' + fmtT(S.gateCdT - S.serverT) : ''}</div>
+        u.innerHTML = `<div class="info"><img class="xmimg" src="${FX.sprURL(gateLook(S.L), 'stand', 120)}" width="110">渡劫之前须先破心魔<br><b>${gb.name}</b> · ${gb.desc}<br>玩家 + 同伴 + 灵宠挑战（失败仅冷却，不扣修为）${gcd ? '<br>心魔反噬，还需调息 ' + fmtT(S.gateCdT - S.serverT) : ''}</div>
         <div class="col"><button class="inkbtn ${gcd ? '' : 'hot'}" id="tbGate" ${gcd ? 'disabled style="opacity:.45"' : ''}>挑战<br><small>心魔</small></button><button class="inkbtn" id="tbOut">暂离</button></div>`;
         document.getElementById('tbGate').onclick = () => { gateStart(); renderFxUI(); refreshUI(); };
         document.getElementById('tbOut').onclick = () => { closeOv(); };
@@ -2573,8 +2680,11 @@ const FX = (() => {
     requestAnimationFrame(frame);
   }
   function playGate(plan) {
+    { const old = document.getElementById('gateArt'); if (old) old.remove(); const d = document.createElement('div'); d.id = 'gateArt'; if (plan.ok) d.className = 'ok';
+      d.innerHTML = `<img src="${getSpr(gateLook(S.L - (plan.ok ? 0 : 0)), 'stand', 200).c.toDataURL()}" width="220"><div style="margin-top:8px">${esc(plan.msg)}</div><div style="font-size:12px;opacity:.7;margin-top:10px">点击继续</div>`;
+      d.onclick = () => d.remove(); document.body.appendChild(d); setTimeout(() => d.remove(), 4200); }
     if (!P.ctx) return;
-    openOv({ type: 'trib', phase: 'result', t: 0, hp: 1, bolts: [], flash: 0, shake: 0, clear: 0, fallen: 0, si: 0, arr: {}, floats: [], plan: { ok: plan.ok, watch: false, fly: false, msg: plan.msg, center: { name: plan.boss.name, sect: '魔天宗', hp: 1 } }, center: { name: plan.boss.name, sect: '魔天宗', hp: 1 } });
+    openOv({ type: 'trib', phase: 'result', t: 0, hp: 1, bolts: [], flash: 0, shake: 0, clear: 0, fallen: 0, si: 0, arr: {}, floats: [], plan: { ok: plan.ok, watch: false, fly: false, msg: plan.msg, specs: S.trib ? S.trib.specs : [], center: { name: plan.boss.name, sect: '魔天宗', hp: 1 } }, center: { name: plan.boss.name, sect: '魔天宗', hp: 1 } });
     renderFxUI();
   }
   return { sprURL: (look, pose, h) => getSpr(look, pose || 'stand', h || 100).c.toDataURL(), counts: () => ({ parts: parts.length, effs: effs.length, floats: floats.length, spr: spr.size }), init, pushBattle, resetField, showing, get popup() { return popup; }, viewChanged, portraitURL, get search() { return search; }, breakthrough, tribPrep, playTrib, playGate, closeOv, get ov() { return ov; }, get bv() { return bv; }, renderFxUI };
@@ -2652,6 +2762,18 @@ function aptTags(p, short) {
 const axCls = p => petGlow(p) ? ' ax' + petGlow(p) : '';
 function petCell(p, fn) { return B(`${petImg(p, 40)}<span class="apts">${aptTags(p, true)}</span><span class="inm" style="color:${PGCOL()[p.g]}">${petName(p)}</span>${p.uid && p.uid === S.petOn ? '<span class="on">出战</span>' : p.uid && S.comp && p.uid === S.comp.petOn ? '<span class="on" style="background:#2766c4">同伴</span>' : ''}`, fn, {}, `cell pt wa pg${p.g}${axCls(p)}`); }
 function petSkillRows(p) { return p.sk.length ? p.sk.map(id => { const k = PSK[id], ex = !!CFG.pet.ex[id]; return `<div class="psk ${ex ? 'ex' : ''}"><span class="tg">${ex ? '仙品专属' : '随机'}</span><div><b>${k.name}</b>${k.cd ? `<span class="muted"> · ${k.cd >= 99 ? '每场 1 次' : '冷却 ' + k.cd + ' 回合'}</span>` : ''}<div class="muted">${k.desc}</div></div></div>`; }).join('') : '<div class="muted" style="margin-top:5px">凡品灵宠无技能，仅普通攻击</div>'; }
+function affBox() {
+  const A = CFG.affinity, l = affLv(), a = S.comp.aff || 0, nx = A.levels[l + 1], G = A.gift;
+  return `<div class="box"><div class="row" style="gap:8px"><b style="font:600 16px var(--kai);color:#b0304a">♥ ${A.names[l]}</b><div class="mbar"><i style="width:${nx ? Math.min(100, (a - A.levels[l]) / (nx - A.levels[l]) * 100) : 100}%;background:linear-gradient(90deg,#e0708a,#ffb0c0)"></i></div><small class="muted">${fmt(Math.floor(a))}${nx ? ' / ' + fmt(nx) : ''}</small></div>
+  <div style="margin-top:5px">${A.names.map((n, i) => i ? `<span class="mnode ${l >= i ? 'on' : ''}">${n}：${A.perks[i]}</span>` : '').join('')}</div>
+  <div class="row" style="gap:8px;margin-top:7px">${B(`赠灵石 ${fmt(Math.floor(monLingshi(S.L) * G.lsSec))}<br><small>好感 +${G.lsAff} · 今日 ${S.daily.gift}/${G.daily}</small>`, () => giftComp('ls'), { dis: S.daily.gift >= G.daily }, 'btn sm')}${B(`赠不老根 ×1<br><small>好感 +${G.herbAff} · 今日 ${S.daily.giftH}/${G.daily}</small>`, () => giftComp('herb'), { dis: S.daily.giftH >= G.daily || S.herbs < 1 }, 'btn sm')}</div>
+  <div class="muted" style="font-size:11px;margin-top:4px">每场野外胜利 +${A.perWin}</div></div>`;
+}
+function bondList() {
+  const cur = bondOf(myPet(), compPet()), nm = id => PETSP[id] ? PETSP[id].name : id;
+  const fx = b => [b.atk && '攻击 +' + b.atk * 100 + '%', b.hp && '气血 +' + b.hp * 100 + '%', b.spd && '身法 +' + b.spd * 100 + '%', b.dr && '减伤 ' + b.dr * 100 + '%', b.crit && '暴击 +' + b.crit * 100 + '%'].filter(Boolean).join('，');
+  return `<div class="box" style="padding:6px">${cur ? `<div style="margin-bottom:5px;font-size:12.5px">当前生效：<b style="color:#b37a12">「${cur.name}」</b> 全队 ${fx(cur)}</div>` : '<div class="muted" style="margin-bottom:5px;font-size:12px">当前组合未触发羁绊（你的灵宠 + 同伴灵宠 搭配下列物种即可激活，全队生效）</div>'}${CFG.bonds.map(b => `<div class="bondr ${cur === b ? 'on' : ''}"><b>${b.name}</b> · ${nm(b.a)} + ${nm(b.b)} → ${fx(b)}</div>`).join('')}</div>`;
+}
 function petMini(p) { return p ? `<span style="display:inline-flex;align-items:center;gap:2px;font-size:11.5px;color:${PGCOL()[p.g]};font-weight:700;white-space:nowrap">${petImg(p, 22).replace('style="', 'style="transform:scaleX(-1);')}${petName(p)}${isHy(p) ? '<span class="apt hy" style="font-size:9px;line-height:12px">混元</span>' : hasXT(p) ? `<span class="apt" style="color:${APTC()[3]};font-size:9px;line-height:12px">先天</span>` : ''}</span>` : '<span class="muted" style="font-size:11px">无灵宠</span>'; }
 let eggAnim = null;
 function showEggAnim(p, extra) {
@@ -2736,8 +2858,8 @@ function renderStatus() {
 }
 function refreshUI() { renderStatus(); renderPanel(); renderNav(); save(); }
 const NAV = [['home', '修炼', 'lotus'], ['char', '角色', 'person'], ['bag', '纳戒', 'ring'], ['travel', '云游', 'cloud'], ['dongfu', '洞府', 'cave'], ['social', '人脉', 'people']];
-const PARENT = { pet: 'char', petshop: 'pet', maps: 'travel', comp: 'travel', tower: 'travel', watch: 'travel', jiyuan: 'travel', trib: 'home', rank: 'social', chat: 'social', merc: 'social', sect: 'char', pills: 'home', sign: 'home', settings: 'home', offline: 'home' };
-const TITLES = { pet: '灵宠', petshop: '碎片兑换', create: '踏入仙途', char: '角色', bag: '纳戒', travel: '云游', maps: '选择地图', comp: '同伴', tower: '锁妖塔', watch: '渡劫观礼', jiyuan: '机缘阁', dongfu: '洞府', social: '人脉', rank: '天榜', settings: '设置', sect: '宗门', sign: '每日签到', merc: '佣兵公会', pills: '丹药', chat: '世界频道', offline: '离线收益', trib: '渡劫' };
+const PARENT = { meridian: 'char', pet: 'char', petshop: 'pet', maps: 'travel', comp: 'travel', tower: 'travel', watch: 'travel', jiyuan: 'travel', trib: 'home', rank: 'social', chat: 'social', merc: 'social', sect: 'char', pills: 'home', sign: 'home', settings: 'home', offline: 'home' };
+const TITLES = { meridian: '功法经脉', pet: '灵宠', petshop: '碎片兑换', create: '踏入仙途', char: '角色', bag: '纳戒', travel: '云游', maps: '选择地图', comp: '同伴', tower: '锁妖塔', watch: '渡劫观礼', jiyuan: '机缘阁', dongfu: '洞府', social: '人脉', rank: '天榜', settings: '设置', sect: '宗门', sign: '每日签到', merc: '佣兵公会', pills: '丹药', chat: '世界频道', offline: '离线收益', trib: '渡劫' };
 function renderNav() { const n = $('nav'); n.innerHTML = ''; if (!S) return; const d = dots(); NAV.forEach(([k, t, i]) => { const b = document.createElement('button'); b.dataset.k = k; b.innerHTML = ic(i) + `<b>${t}</b>`; b.className = (panel === k || PARENT[panel] === k ? 'on' : '') + (d[k] ? ' dot' : ''); b.onclick = () => openPanel(k); n.appendChild(b); }); }
 function openPanel(p, arg) {
   if (p === 'trib' && FXON && S) { FX.tribPrep(); p = 'home'; }
@@ -2869,34 +2991,6 @@ const PANELS = {
     for (const [k, v] of Object.entries(CFG.sects)) h += `<div class="sectc">${portrait({ type: 'human', sect: k }, 70)}<div style="flex:1"><div style="font:600 17px var(--kai);color:${SECTCOL[k]}">${k}</div><div class="muted" style="font-size:12.5px">${v.desc}</div></div>${B('拜入', () => startGame(($('pname').value || nm).trim().slice(0, 8), k), { pri: true })}</div>`;
     return h;
   },
-  home() { return ''; },
-  char() {
-    const s = playerStats(), mR = rate(S.L) * medMult();
-    const slot = k => { const it = S.equip[k]; return `<div style="position:relative;margin-bottom:16px">${it ? itemCell(it, () => { pop = { kind: 'item', it, src: 'equip' }; }, { lab: CFG.gear.slotName[k] + (S.enh[k] ? ' +' + S.enh[k] : ''), enh: S.enh[k] }) : B(`${ic(SLOTIC[k])}<span class="lab">${CFG.gear.slotName[k]}</span>`, () => openPanel('bag'), {}, 'cell empty')}</div>`; };
-    let h = `<div class="row" style="align-items:stretch;gap:10px">
-      <div style="width:60px;display:flex;flex-direction:column;justify-content:center">${slot('weapon')}${slot('armor')}</div>
-      <div class="hero" style="flex:1;text-align:center;padding:6px 0">${portrait({ type: 'human', sect: S.sect, me: true }, 150)}<div style="font:600 19px var(--kai)">${esc(S.name)}</div><div>${realmBadge(S.L)} <span class="badge" style="background:${SECTCOL[S.sect]}">${S.sect}</span></div></div>
-      <div style="width:60px;display:flex;flex-direction:column;justify-content:center">${slot('shoes')}${slot('ring')}</div></div>
-      <div class="sec">属性</div><div class="grid g2">${stat('heart', fmt(s.hp), '气血')}${stat('weapon', fmt(s.atk), '攻击')}${stat('wind', s.spd.toFixed(1), '身法')}${stat('taiji', fmt(power(s)), '道法（战力）')}${stat('lotus', fmt(mR) + '/秒', '打坐速度')}${stat('swords', `${fmt(S.stats.wins)}/${fmt(S.stats.battles)}`, '野外 胜/场')}</div>
-      <div class="sec">同伴<small>境界、装备、强化同步</small></div><div class="box row" style="gap:10px;padding:6px 10px">${portrait({ type: 'human', sect: S.comp.sect, comp: true }, 56)}<div style="flex:1;min-width:0"><b style="font:600 16px var(--kai)">${esc(S.comp.name)}</b> <span class="badge" style="background:${SECTCOL[S.comp.sect]}">${S.comp.sect}</span><div class="muted">道法 ${fmt(charPower(compStats(), compPet()))} · ${petMini(compPet())}</div></div>${B('同伴', () => openPanel('comp'), { pri: true }, 'btn sm')}</div>
-      <div class="sec">宗门技能<small>战斗中自动释放</small></div>${skillCards(S.sect, S.L)}
-      <div class="sec">增益</div><div class="grid g2">${['med', 'field'].map(k => `<div class="box"><div class="row">${ic('pill', `style="color:${PILLCOL[k]};width:20px;height:20px"`)}<b>${k === 'med' ? '聚灵丹·打坐' : '寻妖丹·野外'} +50%</b></div><div class="bar g" style="margin:6px 0 2px"><i style="width:${Math.min(100, S.buffs[k] / CFG.buff.dur * 100)}%"></i></div><div class="muted">${S.buffs[k] > 0 ? '剩余 ' + fmtT(S.buffs[k]) : '未生效'}</div></div>`).join('')}</div>
-      <div class="row" style="margin-top:12px;justify-content:center;gap:10px">${B(ic('paw') + '灵宠', () => openPanel('pet'), { dot: dots().pet })}${B(ic('ring') + '纳戒', () => openPanel('bag'), { dot: dots().bag })}${B(ic('sect') + '宗门', () => openPanel('sect'))}${B(ic('auto') + '自动换装：' + (S.autoEquip ? '开' : '关'), () => { S.autoEquip = !S.autoEquip; }, { pri: S.autoEquip })}</div>`;
-    return h;
-  },
-  bag() {
-    let h = `<div class="sec">丹药材料</div>${consRow()}<div class="sec">装备<small>${S.bag.length}/${CFG.gear.bagCap}</small></div><div class="bar b" style="margin-bottom:8px"><i style="width:${Math.min(100, S.bag.length / CFG.gear.bagCap * 100)}%"></i></div><div class="grid g5">`;
-    const items = S.bag.slice().sort((a, b) => b.q - a.q || b.ilvl - a.ilvl);
-    items.forEach(it => { h += itemCell(it, () => { pop = { kind: 'item', it, src: 'bag' }; }, { up: true }); });
-    for (let i = items.length; i < Math.max(15, Math.ceil(items.length / 5) * 5); i++) h += '<div class="cell empty"></div>';
-    h += `</div><div class="row" style="margin-top:12px;justify-content:center;gap:10px">${B('一键出售', () => { let t = 0; S.bag.forEach(it => t += sellPrice(it)); log(`出售 ${S.bag.length} 件装备，得灵石 ${fmt(t)}`, 'gain'); S.lingshi += t; S.bag = []; }, { dis: !S.bag.length, red: true })}${B(ic('auto') + '自动换装：' + (S.autoEquip ? '开' : '关'), () => { S.autoEquip = !S.autoEquip; }, { pri: S.autoEquip })}${B(ic('person') + '角色', () => openPanel('char'))}</div>`;
-    return h;
-  },
-  pills() {
-    let h = consRow() + '<div class="grid g2">';
-    for (const k of ['xiuwei', 'med', 'field', 'trib']) { const r = CFG.alchemy.recipes[k]; h += `<div class="recipe"><div class="pi" style="background:${PILLCOL[k]}">${ic('pill')}</div><b>${r.name}</b> <span class="badge">×${S.pills[k]}</span><div class="muted" style="min-height:32px">${r.desc}</div>${k === 'trib' ? B('渡劫时使用', () => openPanel('trib'), { dis: !needsTrib(S.L) || !canBreak() }, 'btn sm') : B('服用', () => usePill(k), { pri: true, dis: S.pills[k] <= 0 || (k === 'xiuwei' && S.daily.xiuwei >= CFG.pill.xiuweiDaily) }, 'btn sm')}${k === 'med' || k === 'field' ? `<div class="bar g" style="margin-top:6px"><i style="width:${Math.min(100, S.buffs[k] / CFG.buff.dur * 100)}%"></i></div>` : ''}${k === 'xiuwei' ? `<div class="muted">今日 ${S.daily.xiuwei}/${CFG.pill.xiuweiDaily}</div>` : ''}</div>`; }
-    return h + '</div>';
-  },
   trib() {
     if (!canBreak() || !needsTrib(S.L)) return '<div class="box muted">当前无需渡劫或修为不足。</div>';
     const t = tribInit(), rt = tribRate(), done = isGateDone(S.L), gb = gateBossOf(S.L), gcd = S.serverT < (S.gateCdT || 0);
@@ -2937,7 +3031,7 @@ const PANELS = {
       <div class="sec">同伴<small>境界、装备、强化同步</small></div><div class="box row" style="gap:10px;padding:6px 10px">${portrait({ type: 'human', sect: S.comp.sect, comp: true }, 56)}<div style="flex:1;min-width:0"><b style="font:600 16px var(--kai)">${esc(S.comp.name)}</b> <span class="badge" style="background:${SECTCOL[S.comp.sect]}">${S.comp.sect}</span><div class="muted">道法 ${fmt(charPower(compStats(), compPet()))} · ${petMini(compPet())}</div></div>${B('同伴', () => openPanel('comp'), { pri: true }, 'btn sm')}</div>
       <div class="sec">宗门技能<small>战斗中自动释放</small></div>${skillCards(S.sect, S.L)}
       <div class="sec">增益</div><div class="grid g2">${['med', 'field'].map(k => `<div class="box"><div class="row">${ic('pill', `style="color:${PILLCOL[k]};width:20px;height:20px"`)}<b>${k === 'med' ? '聚灵丹·打坐' : '寻妖丹·野外'} +50%</b></div><div class="bar g" style="margin:6px 0 2px"><i style="width:${Math.min(100, S.buffs[k] / CFG.buff.dur * 100)}%"></i></div><div class="muted">${S.buffs[k] > 0 ? '剩余 ' + fmtT(S.buffs[k]) : '未生效'}</div></div>`).join('')}</div>
-      <div class="row" style="margin-top:12px;justify-content:center;gap:10px">${B(ic('paw') + '灵宠', () => openPanel('pet'), { dot: dots().pet })}${B(ic('ring') + '纳戒', () => openPanel('bag'), { dot: dots().bag })}${B(ic('sect') + '宗门', () => openPanel('sect'))}${B(ic('auto') + '自动换装：' + (S.autoEquip ? '开' : '关'), () => { S.autoEquip = !S.autoEquip; }, { pri: S.autoEquip })}</div>`;
+      <div class="row" style="margin-top:12px;justify-content:center;gap:10px">${B(ic('taiji') + '经脉', () => openPanel('meridian'), { dot: merFree() > 0 })}${B(ic('paw') + '灵宠', () => openPanel('pet'), { dot: dots().pet })}${B(ic('ring') + '纳戒', () => openPanel('bag'), { dot: dots().bag })}${B(ic('sect') + '宗门', () => openPanel('sect'))}${B(ic('auto') + '自动换装：' + (S.autoEquip ? '开' : '关'), () => { S.autoEquip = !S.autoEquip; }, { pri: S.autoEquip })}</div>`;
     return h;
   },
   bag() {
@@ -2953,6 +3047,14 @@ const PANELS = {
     for (const k of ['xiuwei', 'med', 'field', 'trib']) { const r = CFG.alchemy.recipes[k]; h += `<div class="recipe"><div class="pi" style="background:${PILLCOL[k]}">${ic('pill')}</div><b>${r.name}</b> <span class="badge">×${S.pills[k]}</span><div class="muted" style="min-height:32px">${r.desc}</div>${k === 'trib' ? B('渡劫时使用', () => openPanel('trib'), { dis: !needsTrib(S.L) || !canBreak() }, 'btn sm') : B('服用', () => usePill(k), { pri: true, dis: S.pills[k] <= 0 || (k === 'xiuwei' && S.daily.xiuwei >= CFG.pill.xiuweiDaily) }, 'btn sm')}${k === 'med' || k === 'field' ? `<div class="bar g" style="margin-top:6px"><i style="width:${Math.min(100, S.buffs[k] / CFG.buff.dur * 100)}%"></i></div>` : ''}${k === 'xiuwei' ? `<div class="muted">今日 ${S.daily.xiuwei}/${CFG.pill.xiuweiDaily}</div>` : ''}</div>`; }
     return h + '</div>';
   },
+  meridian() {
+    const M = CFG.meridian, free = merFree(), rc = merRespecCost();
+    let h = `<div class="box row" style="gap:10px"><div style="flex:1">打坐冲脉：每突破一层获得 <b>${M.ptsPerLevel}</b> 点经脉点<br><span class="muted" style="font-size:12px">已得 ${merPts()} 点 · 剩余 <b style="color:#8f2018;font-size:15px">${free}</b> 点</span></div>${B('重置经脉' + (rc ? '<br><small>' + fmt(rc) + ' 灵石</small>' : '<br><small>首次免费</small>'), () => { pop = { kind: 'confirm', text: '确定重置全部经脉点？' + (rc ? '花费灵石 ' + fmt(rc) : '（首次免费）'), fn: merRespec }; }, {}, 'btn sm')}</div>`;
+    for (const k of ['atk', 'hp', 'spd']) { const ln = M.lines[k], v = S.mer[k], nx = ln.nodes.find(n => v < n.at), top = ln.nodes[ln.nodes.length - 1].at;
+      h += `<div class="box mline"><div style="width:62px;font:600 15px var(--kai)">${ln.name}<br><small class="muted">${k === 'atk' ? '攻' : k === 'hp' ? '血' : '速'} +${(v * ln.per * 100).toFixed(1)}%</small></div><div style="flex:1"><div class="mbar"><i style="width:${Math.min(100, v / top * 100)}%"></i></div><div>${ln.nodes.map(n => `<span class="mnode ${v >= n.at ? 'on' : ''}" title="${n.desc}">${n.at}·${n.name}</span>`).join('')}</div><div class="muted" style="font-size:11px">${nx ? '下一窍穴「' + nx.name + '」：' + nx.desc + '（还差 ' + (nx.at - v) + '）' : '窍穴已全部冲开'}</div></div><b style="width:28px;text-align:center">${v}</b>${B('+1', () => merAdd(k, 1), { dis: !free }, 'btn sm')}${B('+5', () => merAdd(k, 5), { dis: free < 1 }, 'btn sm')}</div>`; }
+    h += `<div class="sec">窍穴一览</div><div class="box muted" style="font-size:12px;line-height:1.7">${['atk', 'hp', 'spd'].map(k => M.lines[k].name + '：' + M.lines[k].nodes.map(n => n.name + '(' + n.at + ') ' + n.desc).join('；')).join('<br>')}</div>`;
+    return h;
+  },
   comp() {
     const c = S.comp, s = compStats(), p = compPet();
     let h = `<div class="row" style="align-items:stretch;gap:10px"><div class="hero" style="width:128px;text-align:center;padding:6px 0">${portrait({ type: 'human', sect: c.sect, comp: true }, 128)}</div>
@@ -2962,6 +3064,8 @@ const PANELS = {
       <div class="grid g2" style="margin-top:6px;gap:5px">${stat('heart', fmt(s.hp), '气血')}${stat('weapon', fmt(s.atk), '攻击')}${stat('wind', s.spd.toFixed(1), '身法')}${stat('taiji', fmt(power(s)), '道法')}</div></div></div>
       <div class="sec">宗门<small>随时免费改投 · 技能与被动立即生效</small></div><div class="seg">${Object.keys(CFG.sects).map(k => B(k, () => changeSect('comp', k), { pri: c.sect === k }, '')).join('')}</div><div class="muted" style="margin-top:5px;font-size:12px">${CFG.sects[c.sect].desc}</div>
       <div class="sec">同伴灵宠<small>不能与你的出战灵宠相同</small></div><div class="box row" style="gap:10px">${p ? `<div class="cell pt pg${p.g}${axCls(p)}" style="width:56px">${petImg(p, 44)}</div><div style="flex:1"><b style="font:600 15px var(--kai);color:${PGCOL()[p.g]}">${petName(p)}</b><div>${aptTags(p)}</div><div class="muted">${p.sk.map(k => PSK[k].name).join('、') || '无技能'}</div></div>` : `<div style="flex:1" class="muted">${ic('paw')} 尚未携带灵宠</div>`}${B(p ? '更换' : '选择灵宠', () => { pop = { kind: 'petpick' }; }, { pri: true, dis: S.pets.filter(x => x.uid !== S.petOn).length === 0 }, 'btn sm')}</div>
+      <div class="sec">好感<small>战斗胜利与赠礼提升</small></div>${affBox()}
+      <div class="sec">灵宠羁绊<small>你与同伴的出战灵宠组合</small></div>${bondList()}
       <div class="sec">宗门技能<small>${c.sect}</small></div>${skillCards(c.sect, S.L)}`;
     return h;
   },
@@ -3043,6 +3147,7 @@ const PANELS = {
     if (p) { const st = petStats(p, playerStats()); h += `<div class="petcard pg${p.g}${petGlow(p) ? ' ax' + petGlow(p) : ''}"><div class="pp${axCls(p)}" style="overflow:hidden">${petImg(p, 100)}<span class="badge" style="position:absolute;left:4px;top:4px;background:${PGCOL()[p.g]}">${P.grades[p.g]}品</span></div><div style="flex:1;min-width:0"><div class="row" style="justify-content:space-between"><b style="font:600 19px var(--kai);color:${PGCOL()[p.g]}">${PETSP[p.sp].name}</b><span class="badge r">我·出战中</span></div><div style="margin-top:2px">${aptTags(p)}</div><div class="row" style="gap:5px;flex-wrap:wrap;margin-top:3px"><span class="badge b">攻 ${fmt(st.atk)}</span><span class="badge g">血 ${fmt(st.hp)}</span><span class="badge p">身法 ${st.spd.toFixed(1)}</span></div>${petSkillRows(p)}</div></div>`; }
     else h += `<div class="petcard" style="justify-content:center;color:#8a7a60">${ic('paw', 'style="width:28px;height:28px"')}<div>尚无出战灵宠 · 开启灵宠蛋获得</div></div>`;
     { const cp = compPet(); h += `<div class="box row" style="gap:8px;margin-top:6px;padding:6px 10px">${ava(S.comp.name, S.comp.sect, 30)}<div style="flex:1">同伴 <b>${esc(S.comp.name)}</b> 携带：${petMini(cp)}</div>${B(cp ? '更换' : '选择', () => { pop = { kind: 'petpick' }; }, { dis: S.pets.filter(x => x.uid !== S.petOn).length === 0 }, 'btn sm')}</div>`; }
+    h += `<div class="sec">灵宠羁绊<small>你的出战灵宠 + 同伴灵宠</small></div>${bondList()}`;
     h += `<div class="muted" style="margin:5px 2px 0;font-size:11.5px">灵宠只参与战斗（不加修为）· 属性按主人总属性（含装备、强化、宗门）× 品级与资质系数 · 资质：<span class="apt" style="color:${APTC()[0]}">凡体</span><span class="apt" style="color:${APTC()[1]}">灵体</span><span class="apt" style="color:${APTC()[2]}">后天</span><span class="apt" style="color:${APTC()[3]}">先天</span><span class="apt hy">混元</span> · 凡品无技能，灵品 1 个随机技能，仙品 专属 + 随机</div>`;
     h += `<div class="sec">灵宠蛋<small>仙蛋保底 <b style="color:#b37a12">${S.pity}/${P.pity}</b></small></div><div class="grid g3">`;
     for (const k of ['fan', 'ling', 'xian']) { const n = S.eggs[k]; h += `<div class="eggc">${eggSVG(k)}<div style="font:600 14px var(--kai)">${EGGN[k]} <span style="color:#8f2018">×${n}</span></div><div class="muted" style="font-size:10.5px">${k === 'fan' ? '只出凡品' : k === 'ling' ? '灵 ' + P.odds.ling[1] * 100 + '% · 凡' : '仙 ' + P.odds.xian[2] * 100 + '% · 灵 ' + P.odds.xian[1] * 100 + '%'}</div>${B('开启', () => openEggUI(k, false), { pri: true, dis: n <= 0, dot: n > 0 })}${n > 1 ? B('全开', () => openEggUI(k, true), { dis: n <= 0 }) : ''}</div>`; }
@@ -3115,7 +3220,7 @@ function tick() {
 
 /* 测试 / 调试接口 */
 window.XJ = {
-  CFG, MAPS, get S() { return S; }, get FB() { return FB; }, SETTLES, fmt, rate, medMult, fieldPause(v) { fbPaused = !!v; }, fieldTick, settleField, startFieldBattle, battleSec, settleText, get BOTS() { return BOTS; }, advance, setView, changeMap, fight, monGroup, buildAllies, rollAffixes, applyAffixStats, mapMul, gateStart, gateBossOf, isGateDone, buildGateBoss, tribRate, enhCost, enhance, enhRate, enhMulti, playerStats, addItem, rollGrade, openEgg, openEggUI, dismantleDups, dismantlePet, dismantleEggs, exchangeEgg, petScore, showEggAnim, openPetPop(uid) { pop = { kind: 'pet', uid }; renderPanel(); }, makePet, petStats, petCoef, petFrag, petLook, dupList, isHy, hasXT, aptTier, botPower, botStats, power, charPower, deployPet, watchTrib, PSK, PETSP, needExp, needsTrib, lvName, startGame, exportSave, importSave, save, load, playerRank, rankList, recommendMap, towerStart, changeSect, renameComp, compStats, compPet, autoPets, settleChunk, simManage, hire, mercList, levelSec, optSec, daoGong, get ACC0() { return ACC0; }, tribInvite, tribPill, tribStart, craft, harvestAll, usePill, signin, checkDaily, settleOffline, simWinRate, openPanel, runAction, get actions() { return actions; }, FX, setFx(v) { FXON = v; },
+  CFG, MAPS, get S() { return S; }, get FB() { return FB; }, SETTLES, fmt, rate, medMult, fieldPause(v) { fbPaused = !!v; }, fieldTick, settleField, startFieldBattle, battleSec, settleText, get BOTS() { return BOTS; }, advance, setView, changeMap, fight, monGroup, buildAllies, rollAffixes, applyAffixStats, mapMul, gateStart, gateBossOf, isGateDone, buildGateBoss, tribRate, gateLook, gateTier, merAdd, merRespec, merFree, merPts, merNodes, affLv, addAff, giftComp, bondOf, myPet, enhCost, enhance, enhRate, enhMulti, playerStats, addItem, rollGrade, openEgg, openEggUI, dismantleDups, dismantlePet, dismantleEggs, exchangeEgg, petScore, showEggAnim, openPetPop(uid) { pop = { kind: 'pet', uid }; renderPanel(); }, makePet, petStats, petCoef, petFrag, petLook, dupList, isHy, hasXT, aptTier, botPower, botStats, power, charPower, deployPet, watchTrib, PSK, PETSP, needExp, needsTrib, lvName, startGame, exportSave, importSave, save, load, playerRank, rankList, recommendMap, towerStart, changeSect, renameComp, compStats, compPet, autoPets, settleChunk, simManage, hire, mercList, levelSec, optSec, daoGong, get ACC0() { return ACC0; }, tribInvite, tribPill, tribStart, craft, harvestAll, usePill, signin, checkDaily, settleOffline, simWinRate, openPanel, runAction, get actions() { return actions; }, FX, setFx(v) { FXON = v; },
   autoplay(maxSec, stepSec = 30, opt = {}) { // 在线挂机脚本（逐场战斗）：短时段验证用
     const fx0 = FXON; FXON = false; try { return this._autoplay(maxSec, stepSec, opt); } finally { FXON = fx0; }
   },
@@ -3181,6 +3286,9 @@ function simManage(o, st) {
   if (!o.noEnh) { const keep = S.lingshi * 0.7; for (let g = 0; g < 200; g++) { const k = CFG.gear.slots.filter(x => S.equip[x]).sort((a, b) => enhCost(a) / enhRate(a) - enhCost(b) / enhRate(b))[0]; if (!k || S.lingshi - enhCost(k) < keep) break; enhance(k, true); } }
   // 灵宠：开蛋，最强给自己、次强给同伴
   if (!o.noPet) { for (const k of ['xian', 'ling', 'fan']) while (S.eggs[k] > 0) openEgg(k, true); autoPets(); if (S.pets.length > 30) dismantleDups(true); while (S.frag >= CFG.pet.shop.ling) exchangeEgg('ling'); } else { S.petOn = 0; S.comp.petOn = 0; }
+  // 经脉：自动均衡加点（攻→血→速 依次冲节点）；赠礼
+  if (!o.noMer) { const order = ['atk', 'hp', 'atk', 'spd', 'hp', 'atk']; let g = 0; while (merFree() > 0 && g++ < 200) { const k = order.find(x => { const nx = CFG.meridian.lines[x].nodes.find(n => S.mer[x] < n.at); return nx; }) || 'atk'; S.mer[k]++; } }
+  while (S.daily.giftH < CFG.affinity.gift.daily && S.herbs > 12) giftComp('herb');
   // 突破与渡劫（大境界渡劫前先打心魔守关）
   while (canBreak()) {
     if (!needsTrib(S.L)) { breakthrough(true); continue; }
