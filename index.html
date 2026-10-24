@@ -260,6 +260,15 @@ textarea{width:100%;min-height:60px;background:#fffdf6;color:var(--ink);border:1
 @keyframes gafade{from{opacity:0}}
 .mline{display:flex;align-items:center;gap:8px;padding:7px 9px;margin-bottom:6px}.mbar{flex:1;height:7px;border-radius:4px;background:#e6dcc6;overflow:hidden}.mbar i{display:block;height:100%;background:linear-gradient(90deg,#c8902a,#f1c76a)}
 .dfambi{position:relative;overflow:hidden}
+/* v6 新手引导 */
+#tut{position:fixed;left:10px;right:10px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:9000;background:linear-gradient(180deg,#fffaf0,#fff1d6);border:2px solid #e2b04a;border-radius:14px;padding:10px 12px;box-shadow:0 6px 20px rgba(80,40,0,.28);font-size:13.5px;line-height:1.5;color:#3a2a18;animation:tin .3s}
+#tut.top{bottom:auto;top:calc(70px + env(safe-area-inset-top))}
+#tut .tuthd{display:flex;align-items:center;gap:8px}#tut .tuthd b{flex:1;font:600 15px var(--kai);color:#8f2018}
+#tut .tutskip{min-height:44px;min-width:44px;padding:0 12px;border:1px solid #c9a46a;border-radius:10px;background:#fff;color:#7a5a30;font-size:12.5px}
+#tut .tutrw{color:#b37a12;font-size:12px;margin-top:2px}
+#tut .tutdots{display:flex;gap:5px;margin-top:6px}#tut .tutdots i{width:18px;height:4px;border-radius:2px;background:#e8dcc4}#tut .tutdots i.on{background:#e2b04a}#tut .tutdots i.cur{background:#e5483a}
+#tutRing{position:fixed;z-index:8999;pointer-events:none;border:3px solid #ff6a3a;border-radius:14px;box-shadow:0 0 0 4px rgba(255,200,90,.45),0 0 18px rgba(255,120,40,.8);animation:tutp 1.1s ease-in-out infinite}
+@keyframes tutp{50%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(255,200,90,.15),0 0 26px rgba(255,120,40,.9)}}
 /* v5 polish */
 #confetti{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
 #confetti i{position:absolute;top:-14px;width:8px;height:12px;border-radius:2px;animation:cfall 1.6s cubic-bezier(.2,.6,.4,1) forwards}
@@ -419,6 +428,24 @@ input.tx{border-color:#b6d6ff;font-family:var(--kai)}
 .tfl:before{background:linear-gradient(#ff8fb8,#e0588a)}
 .tfl.cur{background:linear-gradient(#ffd56a,#f0a030);color:#fff;box-shadow:0 0 14px rgba(255,200,90,.8)}
 .cb .bb{background:#fff;border:1.5px solid #e0ebff;border-radius:4px 14px 14px 14px}.cb .who{color:#4a8ff0}.cb.sys .bb{background:#f2f5ff;color:#6a7298}
+
+/* v6 移动端：触控目标 ≥44px、iOS 视口/安全区、输入框防缩放 */
+#app{height:100vh;height:var(--appH,100dvh);padding-top:env(safe-area-inset-top)}
+@supports (height:100dvh){#app{height:100dvh}}
+input,textarea,select{font-size:16px}
+@media (pointer:coarse){
+  .btn,.btn.sm,.seg button,.seg .btn,#panel button,.pop button,#cmdgo,#dClose,#mBack{min-height:44px}
+  .btn.sm{padding:6px 12px}
+  .btn,.btn.sm,#panel button.btn,.pop button.btn{min-width:44px}
+  .bbtn{height:44px}
+  #mClose{width:44px;height:44px;top:2px;right:4px}
+  #mBack{min-width:56px}
+  #cmd,#panel input[type=text],#panel input:not([type]){min-height:44px}
+  input[type=checkbox]{width:24px;height:24px}
+  label:has(input[type=checkbox]){min-height:44px;display:flex;align-items:center}
+  .eggc .btn{padding:6px 10px}
+}
+.savebar{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -466,7 +493,7 @@ const CFG = {
   sects: {
     '一剑宗': { desc: '自身攻击 +20%，每 3 回合施展群攻剑诀', selfAtk: 0.2 },
     '道天宗': { desc: '打坐修为 +10%，全队攻击 +20%，会治疗队友；道法共修：全队身法 +15%（多名道天宗不叠加）', med: 0.1, teamAtk: 0.2, teamSpd: 0.15 },
-    '魔天宗': { desc: '野外修为 +8%，全队受到伤害 -5%', field: 0.08, teamDR: 0.05 }
+    '魔天宗': { desc: '野外修为 +20%，自身攻击 +10%，全队受到伤害 -5%', field: 0.2, selfAtk: 0.1, teamDR: 0.05 }
   },
   player: { hp: 100, atk: 10, spd: 10, spdPerLv: 1, growth: 1.1 },
   /* 妖兽：同境界“标准单位” = 标准角色（基础属性 + 同级 refQ 品质四件套、强化 +境界层数×refEnh）+ 一只灵品平均资质灵宠（攻 ×refPetAtk、血 ×refPetHp）。
@@ -588,6 +615,16 @@ const CFG = {
     ]
   },
   /* v5 性能 */
+  /* v6 新手：前几层修为需求打折（首层约 1 分钟）、新手地图妖兽减弱、前几场胜利必掉装备 */
+  newbie: { expMul: [0.04, 0.06, 0.09, 0.12, 0.16, 0.21, 0.27, 0.35, 0.47, 0.65], monL: 8, monMul: 0.6, firstDrops: 4 },
+  tutorial: { steps: [
+    { id: 'med', name: '打坐突破', text: '修为在自动增长（打坐与野外同时进行）。修为满后点亮的「突破」，第一层约 1 分钟。', reward: { xianyu: 30 } },
+    { id: 'view', name: '打坐与野外', text: '你和同伴正在野外刷妖（每打完一场结算战利品），打坐也同时进行。点右侧「打坐」看看灵气汇聚。', reward: { lingshi: 150 } },
+    { id: 'gear', name: '查看装备', text: '打开底部「角色」。新手前几场胜利必掉装备，开启自动换装会自动穿上更好的。', reward: { item: 1, lingshi: 300 } },
+    { id: 'enh', name: '强化装备', text: '在「角色」里点武器 →「强化」，攻击立刻提升。', reward: { lingshi: 200 } },
+    { id: 'comp', name: '结识同伴', text: '「云游」→「同伴」：同伴与你境界、装备同步，一起刷图。', reward: { xianyu: 30 } },
+    { id: 'pet', name: '孵化灵宠', text: '「角色」→「灵宠」→ 开启凡蛋，孵出第一只灵宠随你出战。', reward: { eggs: { fan: 1 } } }
+  ] },
   perf: { sprCap: 140, bgCap: 8, offlineReuse: 3, offlineN: 10 },
   /* v4 周常 Boss：与心魔同级难度，每周一次，奖励独特 */
   weekBoss: {
@@ -753,7 +790,10 @@ const MAPS = (() => {
 
 /* ==================== 工具 ==================== */
 function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
-const R = Math.random;
+let R = Math.random; // v6：可设种子，模拟可复现
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const MR0 = Math.random;
+function seedRng(n) { R = n == null ? MR0 : mulberry32(n >>> 0); if (window.SEEDALL) Math.random = n == null ? MR0 : mulberry32((n ^ 0x9e3779b9) >>> 0); }
 const rint = (a, b, r = R) => a + Math.floor(r() * (b - a + 1));
 const pick = (arr, r = R) => arr[Math.floor(r() * arr.length)];
 function wpick(weights, r = R) { const s = weights.reduce((a, b) => a + b, 0); let x = r() * s; for (let i = 0; i < weights.length; i++) { x -= weights[i]; if (x < 0) return i; } return weights.length - 1; }
@@ -767,7 +807,7 @@ const lvName = L => CFG.realms[Math.floor(L / 10)] + (L % 10 === 9 ? '圆满' : 
 const rate = L => CFG.rateBase * Math.pow(CFG.rateGrowth, L);
 const LW = (() => { let w = 0; for (let i = 0; i < 10; i++) w += 1 + CFG.layerGrowth * i; return w; })();
 const levelSec = L => CFG.realmSec[Math.floor(L / 10)] * (1 + CFG.layerGrowth * (L % 10));
-const needExp = L => rate(L) * levelSec(L);
+const needExp = L => rate(L) * levelSec(L) * (L < CFG.newbie.expMul.length ? CFG.newbie.expMul[L] : 1);
 /* 最优节奏下每层的真实秒数（设计目标，假人成长用） */
 const optSec = L => CFG.pace.optDays[Math.floor(L / 10)] * 86400 * (1 + CFG.layerGrowth * (L % 10)) / LW;
 const CUM = (() => { const c = [0]; for (let l = 0; l <= CFG.maxL; l++) c.push(c[l] + optSec(l)); return c; })();
@@ -804,8 +844,8 @@ function newState(name, sect) {
     buffs: { med: 0, field: 0 }, daily: { date: '', signed: false, towerLeft: CFG.tower.daily, xiuwei: 0, watchLeft: CFG.watch.daily, merc: false, gift: 0, giftH: 0, arenaLeft: CFG.arena.daily },
     plots: [], herbs: 4, pills: { xiuwei: 1, med: 1, field: 1, trib: 0 }, alchemyExp: 0, tower: { record: 0 },
     df: { juling: 0, farm: 0, furnace: 0 }, quest: { day: '', week: '', d: {}, w: {}, dClaim: {}, wClaim: {} },
-    arena: { score: 0, claimed: {}, last: null, pts: 0, streak: 0, week: '', weekPts: 0, title: '无名', bought: {}, adj: 1 }, weekBoss: { week: '', done: false }, skipAnim: false,
-    botSeed: Math.floor(Math.random() * 1e9), botAff: {}, trib: null, tribCooldownT: 0, xinmo: 0, gateClear: {}, gateCdT: 0, mer: { atk: 0, hp: 0, spd: 0, respec: 0, ticket: 0 }, autoBreak: false, autoEquip: true, speed: 1,
+    arena: { score: 0, claimed: {}, last: null, pts: 0, streak: 0, week: '', weekPts: 0, title: '无名', bought: {}, adj: 1 }, weekBoss: { week: '', done: false }, skipAnim: false, tut: { step: 0, skip: false, done: false }, nbDrops: 0,
+    botSeed: Math.floor(R() * 1e9), botAff: {}, trib: null, tribCooldownT: 0, xinmo: 0, gateClear: {}, gateCdT: 0, mer: { atk: 0, hp: 0, spd: 0, respec: 0, ticket: 0 }, autoBreak: false, autoEquip: true, speed: 1,
     stats: { battles: 0, wins: 0, kills: 0, tribOK: 0, tribFail: 0, playSec: 0 }, finished: false, finishT: 0,
     chatNextT: 10, tribEvents: [], lastBotT: -999,
     pets: [], petOn: 0, petUid: 0, eggs: { fan: CFG.pet.startEggs, ling: 0, xian: 0 }, frag: 0, pity: 0, signDays: 0, petStat: { opened: 0, xian: 0 }
@@ -975,7 +1015,7 @@ function bondOf(a, b) { if (!a || !b) return null; return CFG.bonds.find(x => (x
 function charStats(sect, who) { // 玩家与同伴共用：境界、装备、强化完全同步，只有宗门不同；who='me' 加经脉，'comp' 加好感
   const s = baseStats(S.L);
   for (const k of CFG.gear.slots) { const it = S.equip[k]; if (it) { const t = itemStats(it, S.enh[k] || 0); s.atk += t.atk; s.hp += t.hp; s.spd += t.spd; } }
-  if (sect === '一剑宗') s.atk *= 1 + CFG.sects['一剑宗'].selfAtk;
+  if (sect === '一剑宗' || sect === '魔天宗') s.atk *= 1 + (CFG.sects[sect].selfAtk || 0);
   if (who === 'me' && S.mer) { const M = CFG.meridian.lines; for (const k of ['atk', 'hp', 'spd']) { let m = 1 + (S.mer[k] || 0) * M[k].per; merNodes(k).forEach(n => { if (n.pct) m *= 1 + n.pct; }); s[k] *= m; } }
   if (who === 'comp') { const l = affLv(); if (l >= 1) s.atk *= 1 + CFG.affinity.compAtk; if (l >= 2) s.hp *= 1 + CFG.affinity.compHp; }
   return s;
@@ -1003,6 +1043,7 @@ function buildAllies(mercMul) {
 }
 function skillsOf(sect, L) { return (CFG.skills[sect] || []).filter(k => L >= k.L); }
 function fight(allies, enemies, maxRounds, rec) {
+
   /* 双方各自结算宗门 / 灵宠被动（野外妖兽无宗门，效果与旧版一致；斗法双方都吃加成） */
   for (const side of [allies, enemies]) if (side.some(u => u.sect === '道天宗')) for (const u of side) { u.atk *= 1 + CFG.sects['道天宗'].teamAtk; u.spd *= 1 + CFG.sects['道天宗'].teamSpd; }
   const sideDR = [allies.some(u => u.sect === '魔天宗') ? 1 - CFG.sects['魔天宗'].teamDR : 1, enemies.some(u => u.sect === '魔天宗') ? 1 - CFG.sects['魔天宗'].teamDR : 1];
@@ -1187,6 +1228,7 @@ function monGroup(map) {
     const u = unit(affixName(map.mon, aff), monStats(map.ml, map.elite), null, 1, look);
     u.aff = aff; applyAffixStats(u); a.push(u);
   }
+  if (S && S.L < CFG.newbie.monL && map.ml < 10) a.forEach(u => { u.hp *= CFG.newbie.monMul; u.max = u.hp; u.atk *= CFG.newbie.monMul; });
   return a;
 }
 function simWinRate(map, n = 15) { let w = 0; for (let i = 0; i < n; i++) if (fight(buildAllies(false), monGroup(map), CFG.field.maxRounds).win) w++; return w / n; }
@@ -1229,6 +1271,7 @@ function startFieldBattle() {
   if (r.win) {
     const fm = mapMul(map);
     for (let i = 0; i < r.kills; i++) if (R() < CFG.field.dropRate * fm.gear) st.items.push(rollItem(map.ml));
+    if ((S.nbDrops || 0) < CFG.newbie.firstDrops) { S.nbDrops = (S.nbDrops || 0) + 1; st.items.push(rollItem(map.ml + 2)); } // 新手必掉
     for (let i = 0; i < r.kills; i++) { if (R() < CFG.pet.fanDrop * fm.egg) st.fan++; if (map.elite && R() < CFG.pet.lingElite * fm.egg) st.ling++; }
     if (R() < CFG.field.herbRate) st.herb = 1;
     const AL = CFG.affix.loot; st.affE = 0; st.affL = 0; rec.units.forEach(u => { if (u.side === 1 && u.aff && u.aff.length) u.aff.forEach(id => { if (id === 'bomb') st.affL += AL.bomb.ls; else if (id === 'heal') st.affE += AL.heal.exp; else st.affE += AL.other.exp; }); });
@@ -1689,6 +1732,65 @@ function merNodeFx(names) {
   el = document.createElement('div'); el.id = 'merfx'; el.innerHTML = `<div class="ring"></div><div class="ring r2"></div><div class="core"></div><b>冲开窍穴 · ${names.map(esc).join('、')}</b>`;
   document.body.appendChild(el); setTimeout(() => el.remove(), 1800);
 }
+/* ==================== v6 新手引导 ==================== */
+function tutStepDone(id) {
+  if (id === 'med') return S.L >= 1;
+  if (id === 'view') return S.mode === 'meditate';
+  if (id === 'gear') return panel === 'char';
+  if (id === 'enh') return Object.values(S.enh).some(v => v > 0) || Object.values(S.enhFail).some(v => v > 0);
+  if (id === 'comp') return panel === 'comp';
+  if (id === 'pet') return S.pets.length > 0;
+  return true;
+}
+function tutReward(rw) {
+  const g = [];
+  if (rw.xianyu) { S.xianyu += rw.xianyu; g.push('仙玉 ' + rw.xianyu); }
+  if (rw.lingshi) { S.lingshi += rw.lingshi; g.push('灵石 ' + rw.lingshi); }
+  if (rw.item) { const it = rollItem(Math.max(3, S.L + 3)); addItem(it, true); g.push('装备 ×1'); }
+  if (rw.eggs) for (const [k, n] of Object.entries(rw.eggs)) { S.eggs[k] = (S.eggs[k] || 0) + n; g.push(({ fan: '凡蛋', ling: '灵蛋', xian: '仙蛋' })[k] + ' ×' + n); }
+  return g.join('、');
+}
+function tutTick() {
+  if (!S || !S.tut || S.tut.done || S.tut.skip) { tutRender(null); return; }
+  const T = CFG.tutorial.steps; let adv = 0;
+  while (S.tut.step < T.length && tutStepDone(T[S.tut.step].id) && adv++ < 6) { const st = T[S.tut.step]; S.tut.got = S.tut.got || {}; if (!S.tut.got[st.id]) { S.tut.got[st.id] = 1; const g = tutReward(st.reward); log(`引导完成「${st.name}」：获得 ${g}`, 'gain'); } S.tut.step++; }
+  if (S.tut.step >= T.length) { S.tut.done = true; log('新手引导完成！已解锁全部基础玩法，祝道友仙途坦荡。', 'big'); confetti(60); save(); tutRender(null); return; }
+  if (adv) { save(); renderStatus(); }
+  tutRender(T[S.tut.step]);
+}
+function tutTarget(id) {
+  if (typeof document === 'undefined') return null;
+  const q = (sel, txt) => [...document.querySelectorAll(sel)].find(e => e.offsetParent !== null && (!txt || e.textContent.includes(txt)));
+  const nav = k => q('#nav button[data-k="' + k + '"]');
+  if (id === 'med') return q('#bBreak');
+  if (id === 'view') return q('#bMed');
+  if (id === 'gear') return nav('char');
+  if (id === 'enh') { if (panel !== 'char') return nav('char'); return q('.pop button', '强化') || q('#panel button', CFG.gear.slotName.weapon); }
+  if (id === 'comp') { if (panel !== 'travel' && panel !== 'comp') return nav('travel'); return q('#panel button', '同伴'); }
+  if (id === 'pet') { if (panel === 'pet') return q('#panel button', '开启') ; if (panel !== 'char') return nav('char'); return q('#panel button', '灵宠'); }
+  return null;
+}
+function tutRender(st) {
+  if (typeof document === 'undefined' || !document.body) return;
+  let box = document.getElementById('tut'), ring = document.getElementById('tutRing');
+  if (!st) { if (box) box.remove(); if (ring) ring.remove(); return; }
+  if (!box) { box = document.createElement('div'); box.id = 'tut'; document.body.appendChild(box); }
+  if (!ring) { ring = document.createElement('div'); ring.id = 'tutRing'; document.body.appendChild(ring); }
+  const T = CFG.tutorial.steps, key = st.id + '|' + S.tut.step;
+  if (box.dataset.k !== key) {
+    box.dataset.k = key;
+    box.innerHTML = `<div class="tuthd"><b>新手引导 ${S.tut.step + 1}/${T.length} · ${st.name}</b><button class="tutskip" type="button">跳过引导</button></div><div class="tuttx">${st.text}</div><div class="tutrw">奖励：${Object.entries(st.reward).map(([k, v]) => ({ xianyu: '仙玉 ' + v, lingshi: '灵石 ' + v, item: '装备', eggs: '凡蛋' })[k]).join('、')}</div><div class="tutdots">${T.map((_, i) => `<i class="${i < S.tut.step ? 'on' : i === S.tut.step ? 'cur' : ''}"></i>`).join('')}</div>`;
+    box.querySelector('.tutskip').onclick = e => { e.stopPropagation(); if (confirm('跳过新手引导？（可在设置里重新开启）')) { S.tut.skip = true; save(); tutRender(null); } };
+  }
+  const el = tutTarget(st.id);
+  if (el) { const r = el.getBoundingClientRect(); ring.style.display = 'block'; ring.style.left = (r.left - 6) + 'px'; ring.style.top = (r.top - 6) + 'px'; ring.style.width = (r.width + 12) + 'px'; ring.style.height = (r.height + 12) + 'px'; box.classList.toggle('top', r.top > window.innerHeight * 0.55); }
+  else ring.style.display = 'none';
+}
+function copyText(v) {
+  const fb = () => { try { const t = document.createElement('textarea'); t.value = v; t.setAttribute('readonly', ''); t.style.cssText = 'position:fixed;top:0;left:0;opacity:0;font-size:16px'; document.body.appendChild(t); t.focus(); t.select(); t.setSelectionRange(0, v.length); const ok = document.execCommand('copy'); t.remove(); log(ok ? '存档已复制到剪贴板。' : '已生成存档，请长按输入框全选复制。', ok ? 'sys' : 'warn'); } catch (e) { log('已生成存档，请长按输入框全选复制。', 'warn'); } };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(v).then(() => log('存档已复制到剪贴板。', 'sys'), fb); else fb();
+}
+function downloadSave() { const v = exportSave(), a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([v], { type: 'text/plain' })); a.download = 'xianjing-save-' + new Date().toISOString().slice(0, 10) + '.txt'; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); log('存档文件已生成。', 'sys'); }
 function applyQuestReward(rw) {
   if (rw.xianyu) { S.xianyu += rw.xianyu; log(`仙玉 +${rw.xianyu}`, 'gain'); }
   if (rw.lsSec) { const v = Math.floor(monLingshi(S.L) * rw.lsSec); S.lingshi += v; log(`灵石 +${fmt(v)}`, 'gain'); }
@@ -1757,14 +1859,20 @@ function rankList() {
 function playerRank() { if (S.L < CFG.rankUnlockL) return 0; return rankList().findIndex(x => x.me) + 1; }
 
 /* ==================== 存档 ==================== */
-function save() { if (!S) return; S.lastSave = Date.now(); try { localStorage.setItem(CFG.saveKey, JSON.stringify(S)); } catch (e) { } }
+/* v6 iOS：隐私模式 / 存储受限时 localStorage 会抛错 → 退回内存并提示导出 */
+const LS = { ok: true, mem: {}, warned: false,
+  get(k) { try { const v = localStorage.getItem(k); return v != null ? v : (this.mem[k] != null ? this.mem[k] : null); } catch (e) { this.fail(); return this.mem[k] != null ? this.mem[k] : null; } },
+  set(k, v) { this.mem[k] = v; try { localStorage.setItem(k, v); } catch (e) { this.fail(); } },
+  del(k) { delete this.mem[k]; try { localStorage.removeItem(k); } catch (e) { } },
+  fail() { this.ok = false; if (!this.warned && typeof log === 'function') { this.warned = true; setTimeout(() => log('⚠ 浏览器禁止本地存档（可能是无痕/隐私模式），关闭页面会丢失进度。请在 设置 → 存档 中导出保存。', 'warn'), 0); } } };
+function save() { if (!S) return; S.lastSave = Date.now(); LS.set(CFG.saveKey, JSON.stringify(S)); }
 function exportSave() { save(); return 'XJCQ1:' + btoa(unescape(encodeURIComponent(JSON.stringify(S)))); }
 function importSave(str) {
-  try { str = str.trim(); if (!str.startsWith('XJCQ1:')) throw 0; const o = JSON.parse(decodeURIComponent(escape(atob(str.slice(6))))); if (!o || o.v !== 1 || typeof o.L !== 'number') throw 0; localStorage.setItem(CFG.saveKey, JSON.stringify(o)); load(); log('存档导入成功。', 'big'); return true; }
+  try { str = String(str || '').replace(/\s+/g, ''); const at = str.indexOf('XJCQ1:'); if (at < 0) throw 0; str = str.slice(at); const o = JSON.parse(decodeURIComponent(escape(atob(str.slice(6))))); if (!o || o.v !== 1 || typeof o.L !== 'number') throw 0; LS.set(CFG.saveKey, JSON.stringify(o)); load(); log('存档导入成功。', 'big'); return true; }
   catch (e) { log('存档字符串无效。', 'warn'); return false; }
 }
 function load() {
-  let o = null; try { o = JSON.parse(localStorage.getItem(CFG.saveKey) || 'null'); } catch (e) { }
+  let o = null; try { o = JSON.parse(LS.get(CFG.saveKey) || 'null'); } catch (e) { }
   if (!o) { S = null; return false; }
   const d = newState(o.name, o.sect); S = Object.assign(d, o); S.daily = Object.assign(d.daily, o.daily || {}); S.pills = Object.assign(d.pills, o.pills || {}); S.buffs = Object.assign(d.buffs, o.buffs || {}); S.eggs = Object.assign(d.eggs, o.eggs || {}); S.petStat = Object.assign(d.petStat, o.petStat || {}); if (!Array.isArray(S.pets)) S.pets = []; S.pets.forEach(p => ensureApt(p)); // 旧存档迁移：补齐灵宠字段；旧灵宠补随机资质（攻/血系数）
   if (!S.enhFail) S.enhFail = { weapon: 0, armor: 0, shoes: 0, ring: 0 }; // 旧存档迁移：保底计数
@@ -1772,6 +1880,7 @@ function load() {
   if (!S.df) S.df = { juling: 0, farm: 0, furnace: 0 }; for (const k of ['juling', 'farm', 'furnace']) if (S.df[k] == null) S.df[k] = 0;
   if (!S.quest) S.quest = { day: '', week: '', d: {}, w: {}, dClaim: {}, wClaim: {} };
   if (!S.arena) S.arena = { score: 0, claimed: {}, last: null }; if (S.daily.arenaLeft == null) S.daily.arenaLeft = CFG.arena.daily;
+  if (!o.tut) S.tut = { step: 0, skip: false, done: S.L >= 5, got: {} }; if (o.nbDrops == null) S.nbDrops = S.L >= 5 ? 99 : 0;
   S.arena = Object.assign({ adj: 1, pts: 0, streak: 0, week: '', weekPts: 0, title: '无名', bought: {} }, S.arena); if (S.arena.last) delete S.arena.last.rec; if (S.skipAnim == null) S.skipAnim = false;
   if (!S.weekBoss) S.weekBoss = { week: '', done: false };
   if (S.comp.aff == null) S.comp.aff = 0; if (S.daily.gift == null) S.daily.gift = 0; if (S.daily.giftH == null) S.daily.giftH = 0;
@@ -3206,7 +3315,8 @@ function buildChrome() {
   document.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { if (S) openPanel(b.dataset.p); });
   const bt = $('sideR').querySelector('[data-p="travel"]'); if (bt) bt.id = 'bTeam';
 }
-function renderStatus() {
+function renderStatus() { const R0 = R; R = MR0; try { return _renderStatus(); } finally { R = R0; } } // v6：界面渲染不消耗逻辑随机流
+function _renderStatus() {
   const app = $('app');
   if (!S) { $('tName').textContent = '仙境苍穹'; $('tLv').textContent = '凡人篇'; ['tLs', 'tXy', 'tJy', 'xpTxt', 'xpPct'].forEach(i => $(i).innerHTML = ''); $('xpBar').style.width = '0'; app.classList.add('nogame'); ['sideL', 'sideR', 'fieldBar', 'dock'].forEach(i => $(i).style.visibility = 'hidden'); return; }
   ['sideL', 'sideR', 'fieldBar', 'dock'].forEach(i => $(i).style.visibility = ''); app.classList.remove('nogame');
@@ -3229,7 +3339,8 @@ function refreshUI() { renderStatus(); renderPanel(); renderNav(); save(); }
 const NAV = [['home', '修炼', 'lotus'], ['char', '角色', 'person'], ['bag', '纳戒', 'ring'], ['travel', '云游', 'cloud'], ['dongfu', '洞府', 'cave'], ['social', '人脉', 'people']];
 const PARENT = { meridian: 'char', quests: 'home', arena: 'travel', weekboss: 'travel', pet: 'char', petshop: 'pet', maps: 'travel', comp: 'travel', tower: 'travel', watch: 'travel', jiyuan: 'travel', trib: 'home', rank: 'social', chat: 'social', merc: 'social', sect: 'char', pills: 'home', sign: 'home', settings: 'home', offline: 'home' };
 const TITLES = { meridian: '功法经脉', quests: '每日目标', arena: '斗法台', weekboss: '周常挑战', pet: '灵宠', petshop: '碎片兑换', create: '踏入仙途', char: '角色', bag: '纳戒', travel: '云游', maps: '选择地图', comp: '同伴', tower: '锁妖塔', watch: '渡劫观礼', jiyuan: '机缘阁', dongfu: '洞府', social: '人脉', rank: '天榜', settings: '设置', sect: '宗门', sign: '每日签到', merc: '佣兵公会', pills: '丹药', chat: '世界频道', offline: '离线收益', trib: '渡劫' };
-function renderNav() { const n = $('nav'); n.innerHTML = ''; if (!S) return; const d = dots(); NAV.forEach(([k, t, i]) => { const b = document.createElement('button'); b.dataset.k = k; b.innerHTML = ic(i) + `<b>${t}</b>`; b.className = (panel === k || PARENT[panel] === k ? 'on' : '') + (d[k] ? ' dot' : ''); b.onclick = () => openPanel(k); n.appendChild(b); }); }
+function renderNav() { const R0 = R; R = MR0; try { return _renderNav(); } finally { R = R0; } } // v6：界面渲染不消耗逻辑随机流
+function _renderNav() { const n = $('nav'); n.innerHTML = ''; if (!S) return; const d = dots(); NAV.forEach(([k, t, i]) => { const b = document.createElement('button'); b.dataset.k = k; b.innerHTML = ic(i) + `<b>${t}</b>`; b.className = (panel === k || PARENT[panel] === k ? 'on' : '') + (d[k] ? ' dot' : ''); b.onclick = () => openPanel(k); n.appendChild(b); }); }
 function openPanel(p, arg) {
   if (p === 'trib' && FXON && S) { FX.tribPrep(); p = 'home'; }
   if (p !== panel) { if (PARENT[p] && PARENT[p] !== 'home' && (panel === PARENT[p] || PARENT[panel] === PARENT[p])) navStack = [PARENT[p]]; else navStack = []; }
@@ -3239,7 +3350,8 @@ function openPanel(p, arg) {
 function A(label, fn, opt = {}) { actions.push({ label, fn, opt }); return actions.length - 1; }
 /* 生成一个可点击元素（自动登记为动作） */
 function B(label, fn, opt = {}, cls = 'btn') { const i = A(typeof label === 'string' ? label.replace(/<[^>]+>/g, '') : '', fn, opt); return `<button data-i="${i}" class="${cls}${opt.pri ? ' pri' : ''}${opt.red ? ' red' : ''}${opt.dot ? ' dot' : ''}" ${opt.dis ? 'disabled' : ''} ${opt.st ? `style="${opt.st}"` : ''}>${label}</button>`; }
-function renderPanel() {
+function renderPanel() { const R0 = R; R = MR0; try { return _renderPanel(); } finally { R = R0; } } // v6：界面渲染不消耗逻辑随机流
+function _renderPanel() {
   if (typeof document === 'undefined') return;
   const m = $('modal'), pe = $('panel');
   const key = S ? panel : 'create';
@@ -3254,7 +3366,7 @@ function renderPanel() {
   m.style.bottom = (S ? $('nav').offsetHeight : 0) + 'px'; // 弹窗不遮挡底部标签栏
   m.classList.toggle('center', key === 'create' || key === 'offline'); m.classList.add('open');
   if (key === 'create') { const dz = $('dice'); if (dz) dz.onclick = () => { $('pname').value = pick(NAMES); }; }
-  if (key === 'settings') { const g = $('openLog'); if (g) g.onclick = () => $('drawer').classList.add('open'); }
+  if (key === 'settings') { const g = $('openLog'); if (g) g.onclick = () => $('drawer').classList.add('open'); const f = $('savefile'); if (f) f.onchange = () => { const file = f.files && f.files[0]; if (!file) return; const rd = new FileReader(); rd.onload = () => { importSave(String(rd.result || '')); renderStatus(); renderPanel(); renderNav(); }; rd.readAsText(file); }; }
   if (key === 'chat') { const c = $('chatList'); if (c) c.scrollTop = c.scrollHeight; }
 }
 function runAction(i) { const a = actions[i]; if (!a || a.opt.dis) return; userActT = Date.now(); a.fn(); renderStatus(); renderPanel(); renderNav(); save(); }
@@ -3270,7 +3382,7 @@ function enhRate(slot) { const g = CFG.gear; return Math.max(g.enhanceRateMin, M
 /* 返回 0=无法强化 1=成功 2=失败；quiet 时不出日志 */
 function enhance(slot, quiet) {
   const it = S.equip[slot]; if (!it) return 0; const c = enhCost(slot); if (S.lingshi < c) { if (!quiet) log('灵石不足。', 'warn'); return 0; }
-  S.lingshi -= c; const pity = (S.enhFail[slot] || 0) >= CFG.gear.enhancePity, ok = pity || Math.random() < enhRate(slot);
+  S.lingshi -= c; const pity = (S.enhFail[slot] || 0) >= CFG.gear.enhancePity, ok = pity || R() < enhRate(slot);
   if (ok) { S.enh[slot] = (S.enh[slot] || 0) + 1; S.enhFail[slot] = 0; } else S.enhFail[slot] = (S.enhFail[slot] || 0) + 1;
   S.enhLast = { slot, ok, pity, lv: S.enh[slot], t: Date.now() };
   if (!quiet) { const nm = CFG.gear.slotName[slot]; if (ok) { log(`${nm}强化成功${pity ? '（保底）' : ''}！当前 +${S.enh[slot]}（花费灵石 ${fmt(c)}）`, 'gain'); enhFx(true, `强化成功 +${S.enh[slot]}${pity ? ' · 保底' : ''}`); } else { log(`${nm}强化失败，等级不变（保底 ${S.enhFail[slot]}/${CFG.gear.enhancePity}）`, 'warn'); enhFx(false, `强化失败 · 保底 ${S.enhFail[slot]}/${CFG.gear.enhancePity}`); } }
@@ -3630,9 +3742,13 @@ const PANELS = {
   settings() {
     let h = `<div class="grid g2">${stat('lotus', fmtT(S.stats.playSec), '修炼时长')}${stat('swords', fmt(S.stats.battles), '野外战斗')}${stat('bolt', `${S.stats.tribOK}/${S.stats.tribFail}`, '渡劫 成/败')}${stat('star', S.finished ? fmtT(S.finishT) : '—', '通关用时')}</div>
     <div class="sec">游戏速度<small>调试用</small></div><div class="seg">${CFG.speeds.map(s => B('×' + s, () => { S.speed = s; log(`游戏速度：×${s}${s > 1 ? '（调试）' : ''}`, 'sys'); }, { pri: S.speed === s }, '')).join('')}</div>
+    <div class="sec">新手引导</div><div class="row" style="gap:8px">${B(S.tut && !S.tut.skip && !S.tut.done ? '引导进行中' : '重新开启引导', () => { S.tut = { step: 0, skip: false, done: false, got: (S.tut && S.tut.got) || {} }; save(); log('新手引导已重新开启（已完成的步骤会自动跳过，不重复发奖励）。', 'sys'); }, { dis: S.tut && !S.tut.skip && !S.tut.done }, 'btn sm')}</div>
     <div class="sec">战斗动画</div><div class="seg">${B('播放', () => { S.skipAnim = false; save(); openPanel('settings'); }, { pri: !S.skipAnim }, '')}${B('跳过', () => { S.skipAnim = true; save(); FX.clearAll && FX.clearAll(); openPanel('settings'); }, { pri: S.skipAnim }, '')}</div>
-    <div class="sec">存档</div><textarea id="savebox" placeholder="点击“导出”生成存档字符串；粘贴后点“导入”"></textarea><div class="row" style="gap:8px;margin-top:6px">${B('导出存档', () => { setTimeout(() => { $('savebox').value = exportSave(); $('savebox').select(); }, 0); log('存档字符串已生成，请复制保存。', 'sys'); }, {}, 'btn sm')}${B('导入存档', () => { const v = $('savebox').value; if (v) importSave(v); }, {}, 'btn sm')}</div>
-    <div class="sec">调试</div><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm" id="openLog">${ic('log')} 日志与指令</button>${B('模拟新的一天', () => checkDaily(true), {}, 'btn sm')}${B('删除存档重开', () => { if (confirm('确定删除存档并重新开始？')) { localStorage.removeItem(CFG.saveKey); location.reload(); } }, { red: true }, 'btn sm')}</div>
+    <div class="sec">存档<small>${LS.ok ? '本地已自动保存' : '⚠ 本地存档不可用，请导出'}</small></div><textarea id="savebox" placeholder="点击“导出”生成存档字符串；粘贴后点“导入”" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+    <div class="savebar">${B('导出并复制', () => { const v = exportSave(); copyText(v); setTimeout(() => { const t = $('savebox'); if (t) { t.value = v; t.select(); } }, 0); }, { pri: true }, 'btn sm')}${typeof navigator !== 'undefined' && navigator.share ? B('分享…', () => { navigator.share({ title: '仙境存档', text: exportSave() }).catch(() => { }); }, {}, 'btn sm') : ''}${B('下载 .txt', () => downloadSave(), {}, 'btn sm')}</div>
+    <div class="savebar">${B('导入存档', () => { const t = $('savebox'); const v = t && t.value; if (v) importSave(v); else log('请先把存档字符串粘贴到上面的输入框。', 'warn'); }, {}, 'btn sm')}${typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.readText ? B('从剪贴板导入', () => { navigator.clipboard.readText().then(v => importSave(v)).catch(() => log('无法读取剪贴板，请长按输入框手动粘贴。', 'warn')); }, {}, 'btn sm') : ''}<label class="btn sm" style="display:inline-flex;align-items:center">从文件导入<input type="file" id="savefile" accept=".txt,text/plain" style="display:none"></label></div>
+    <div class="muted" style="font-size:11.5px;margin-top:4px">提示：iOS Safari 长期未访问可能清理网页数据；建议「添加到主屏幕」并定期导出。</div>
+    <div class="sec">调试</div><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn sm" id="openLog">${ic('log')} 日志与指令</button>${B('模拟新的一天', () => checkDaily(true), {}, 'btn sm')}${B('删除存档重开', () => { if (confirm('确定删除存档并重新开始？')) { LS.del(CFG.saveKey); location.reload(); } }, { red: true }, 'btn sm')}</div>
     <div class="muted" style="margin-top:10px">离线收益上限 ${CFG.offlineCapHours} 小时。所有美术均为程序绘制的原创水墨风格。</div>`;
     return h;
   }
@@ -3665,7 +3781,7 @@ function tick() {
 
 /* 测试 / 调试接口 */
 window.XJ = {
-  CFG, MAPS, get S() { return S; }, arenaMatch, arenaBuy, arenaWeekSettle, arenaTitleOf, teamPw, playReplay, confetti, merNodeFx, settleMemo, get arenaRec() { return arenaRec; }, get FB() { return FB; }, SETTLES, fmt, rate, medMult, fieldPause(v) { fbPaused = !!v; }, fieldTick, settleField, startFieldBattle, battleSec, settleText, get BOTS() { return BOTS; }, advance, setView, changeMap, fight, monGroup, buildAllies, rollAffixes, applyAffixStats, mapMul, gateStart, gateBossOf, isGateDone, buildGateBoss, tribRate, gateLook, gateTier, merAdd, merRespec, merFree, merPts, merNodes, affLv, addAff, giftComp, bondOf, myPet, dfUpgrade, dfCost, questAdd, questClaim, merSuggest, merApplySuggest, farmGrowSec, ensureQuest, arenaStart, arenaClaim, arenaFoeTeam, weekBossStart, weekBossOf, buildWeekBoss, julingBonus, enhCost, enhance, enhRate, enhMulti, playerStats, addItem, rollGrade, openEgg, openEggUI, dismantleDups, dismantlePet, dismantleEggs, exchangeEgg, petScore, showEggAnim, openPetPop(uid) { pop = { kind: 'pet', uid }; renderPanel(); }, makePet, petStats, petCoef, petFrag, petLook, dupList, isHy, hasXT, aptTier, botPower, botStats, power, charPower, deployPet, watchTrib, PSK, PETSP, needExp, needsTrib, lvName, startGame, exportSave, importSave, save, load, playerRank, rankList, recommendMap, towerStart, changeSect, renameComp, compStats, compPet, autoPets, settleChunk, simManage, hire, mercList, levelSec, optSec, daoGong, get ACC0() { return ACC0; }, tribInvite, tribPill, tribStart, craft, harvestAll, usePill, signin, checkDaily, settleOffline, simWinRate, openPanel, runAction, get actions() { return actions; }, FX, setFx(v) { FXON = v; },
+  CFG, MAPS, get S() { return S; }, seedRng, tutTick, tutTarget, breakthrough, canBreak, arenaMatch, arenaBuy, arenaWeekSettle, arenaTitleOf, teamPw, playReplay, confetti, merNodeFx, settleMemo, get arenaRec() { return arenaRec; }, get FB() { return FB; }, SETTLES, fmt, rate, medMult, fieldPause(v) { fbPaused = !!v; }, fieldTick, settleField, startFieldBattle, battleSec, settleText, get BOTS() { return BOTS; }, advance, setView, changeMap, fight, monGroup, buildAllies, rollAffixes, applyAffixStats, mapMul, gateStart, gateBossOf, isGateDone, buildGateBoss, tribRate, gateLook, gateTier, merAdd, merRespec, merFree, merPts, merNodes, affLv, addAff, giftComp, bondOf, myPet, dfUpgrade, dfCost, questAdd, questClaim, merSuggest, merApplySuggest, farmGrowSec, ensureQuest, arenaStart, arenaClaim, arenaFoeTeam, weekBossStart, weekBossOf, buildWeekBoss, julingBonus, enhCost, enhance, enhRate, enhMulti, playerStats, addItem, rollGrade, openEgg, openEggUI, dismantleDups, dismantlePet, dismantleEggs, exchangeEgg, petScore, showEggAnim, openPetPop(uid) { pop = { kind: 'pet', uid }; renderPanel(); }, makePet, petStats, petCoef, petFrag, petLook, dupList, isHy, hasXT, aptTier, botPower, botStats, power, charPower, deployPet, watchTrib, PSK, PETSP, needExp, needsTrib, lvName, startGame, exportSave, importSave, save, load, playerRank, rankList, recommendMap, towerStart, changeSect, renameComp, compStats, compPet, autoPets, settleChunk, simManage, hire, mercList, levelSec, optSec, daoGong, get ACC0() { return ACC0; }, tribInvite, tribPill, tribStart, craft, harvestAll, usePill, signin, checkDaily, settleOffline, simWinRate, openPanel, runAction, get actions() { return actions; }, FX, setFx(v) { FXON = v; },
   autoplay(maxSec, stepSec = 30, opt = {}) { // 在线挂机脚本（逐场战斗）：短时段验证用
     const fx0 = FXON; FXON = false; try { return this._autoplay(maxSec, stepSec, opt); } finally { FXON = fx0; }
   },
@@ -3760,6 +3876,7 @@ function simManage(o, st) {
 /* 启动 */
 function boot() {
   FX.init(); buildChrome();
+  setInterval(() => { try { tutTick(); } catch (e) { } }, 350);
   document.addEventListener('pointerdown', () => { userActT = Date.now(); }, true);
   $('cmdgo').onclick = onCmd; $('cmd').addEventListener('keydown', e => { if (e.key === 'Enter') onCmd(); });
   $('dClose').onclick = () => $('drawer').classList.remove('open');
