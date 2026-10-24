@@ -430,7 +430,7 @@ const CFG = {
      optDays：设计目标，最优情况下每个大境界所需天数（凡人…渡劫）；凡人→大乘圆满合计约 12 天，渡劫再约 3.5 天。假人天榜也按这张表在真实时间里成长。
      realmSec：每层所需修为 = 打坐速率 × realmSec[大境界] × (1 + layerGrowth × 层)；由 test/timeline.js 的最优策略模拟标定。 */
   pace: { optDays: [0.1, 0.25, 0.5, 0.8, 1.2, 1.6, 2.1, 2.5, 3.0, 3.5] },
-  realmSec: [1470, 2330, 6320, 9850, 21400, 29600, 40800, 53700, 56400, 77400], layerGrowth: 0.08,
+  realmSec: [1620, 2569, 6967, 10859, 23591, 32631, 44978, 59199, 62175, 85326], layerGrowth: 0.08,
   expCapMul: 3,                   // 修为最多囤积当前层需求的 3 倍（元婴起一层约 3 小时，3 倍 ≥ 8 小时离线上限）
   offlineCapHours: 8,             // 离线收益上限 8 小时：节奏按“每 8 小时内至少上线一次”计算，此时离线时间全部有效
   speeds: [1, 10, 60, 300, 3600],
@@ -468,15 +468,15 @@ const CFG = {
     bosses: [
       /* hp=×(同境界标准血×2)；atk=×标准攻击；再乘队伍实力^teamExp 与 hpMul/atkMul。目标：平均灵品宠 ~70%，无宠 ~10–25% */
       { name: '心魔·稚念', hp: 2.8, atk: 0.9, skill: 'slash', desc: '凡尘执念凝聚' },
-      { name: '心魔·欲焰', hp: 2.29, atk: 0.9, skill: 'burn', desc: '欲火焚心' },
-      { name: '心魔·执念', hp: 3.0, atk: 1.0, skill: 'slash', desc: '执而不化' },
-      { name: '心魔·贪障', hp: 2.41, atk: 1.06, skill: 'drain', desc: '贪念噬魂' },
-      { name: '心魔·嗔魔', hp: 3.8, atk: 1.16, skill: 'nova', desc: '怒气爆发' },
+      { name: '心魔·欲焰', hp: 2.6, atk: 0.95, skill: 'burn', desc: '欲火焚心' },
+      { name: '心魔·执念', hp: 2.7, atk: 1.0, skill: 'slash', desc: '执而不化' },
+      { name: '心魔·贪障', hp: 2.7, atk: 1.05, skill: 'drain', desc: '贪念噬魂' },
+      { name: '心魔·嗔魔', hp: 3.5, atk: 1.12, skill: 'nova', desc: '怒气爆发' },
       { name: '心魔·痴障', hp: 3.44, atk: 1.16, skill: 'drain', desc: '痴心不改' },
-      { name: '心魔·慢心', hp: 3.43, atk: 1.18, skill: 'armor', desc: '傲视众生' },
-      { name: '心魔·疑劫', hp: 4.85, atk: 1.2, skill: 'nova', desc: '疑念成劫' },
-      { name: '心魔·天魔', hp: 4.7, atk: 1.22, skill: 'nova', desc: '天魔合身' },
-      { name: '心魔·飞升影', hp: 4.85, atk: 1.19, skill: 'nova', desc: '飞升之影' }
+      { name: '心魔·慢心', hp: 3.6, atk: 1.15, skill: 'armor', desc: '傲视众生' },
+      { name: '心魔·疑劫', hp: 4.4, atk: 1.18, skill: 'nova', desc: '疑念成劫' },
+      { name: '心魔·天魔', hp: 4.3, atk: 1.22, skill: 'nova', desc: '天魔合身' },
+      { name: '心魔·飞升影', hp: 4.2, atk: 1.19, skill: 'nova', desc: '飞升之影' }
     ],
     skills: {
       slash: { name: '魔斩', mul: 1.5, cd: 2 },
@@ -491,9 +491,9 @@ const CFG = {
   meridian: {
     ptsPerLevel: 1, respecSec: 1800, // 洗点费用 = 打坐速率 × respecSec 秒对应的灵石（monLingshi × 60）
     lines: {
-      atk: { name: '攻脉', icon: 'weapon', per: 0.005, stat: '攻击', nodes: [{ at: 15, name: '剑意', desc: '暴击率 +8%（暴击 ×1.6）', crit: 0.08 }, { at: 40, name: '锋芒', desc: '对精英 / Boss 伤害 +12%', eliteDmg: 0.12 }, { at: 70, name: '破军', desc: '攻击再 +5%', pct: 0.05 }] },
-      hp:  { name: '血脉', icon: 'heart', per: 0.007, stat: '气血', nodes: [{ at: 15, name: '护体', desc: '受到伤害 -6%', dr: 0.06 }, { at: 40, name: '回元', desc: '每回合回复 3% 气血', regen: 0.03 }, { at: 70, name: '金身', desc: '气血再 +5%', pct: 0.05 }] },
-      spd: { name: '速脉', icon: 'wind', per: 0.004, stat: '身法', nodes: [{ at: 15, name: '轻身', desc: '闪避率 +5%', dodge: 0.05 }, { at: 40, name: '疾影', desc: '额外行动几率 +6%', extra: 0.06 }, { at: 70, name: '无影', desc: '身法再 +5%', pct: 0.05 }] }
+      atk: { name: '攻脉', icon: 'weapon', per: 0.003, stat: '攻击', nodes: [{ at: 15, name: '剑意', desc: '暴击率 +8%（暴击 ×1.6）', crit: 0.08 }, { at: 40, name: '锋芒', desc: '对精英 / Boss 伤害 +12%', eliteDmg: 0.12 }, { at: 70, name: '破军', desc: '攻击再 +5%', pct: 0.05 }] },
+      hp:  { name: '血脉', icon: 'heart', per: 0.004, stat: '气血', nodes: [{ at: 15, name: '护体', desc: '受到伤害 -6%', dr: 0.06 }, { at: 40, name: '回元', desc: '每回合回复 3% 气血', regen: 0.03 }, { at: 70, name: '金身', desc: '气血再 +5%', pct: 0.05 }] },
+      spd: { name: '速脉', icon: 'wind', per: 0.0025, stat: '身法', nodes: [{ at: 15, name: '轻身', desc: '闪避率 +5%', dodge: 0.05 }, { at: 40, name: '疾影', desc: '额外行动几率 +6%', extra: 0.06 }, { at: 70, name: '无影', desc: '身法再 +5%', pct: 0.05 }] }
     }
   },
   /* v2 同伴好感：野外胜利 / 赠礼增长；分级解锁同伴被动、合击、渡劫助阵 */
@@ -514,6 +514,22 @@ const CFG = {
   ],
   /* v2 身法：身法高于对面平均时，按比例获得额外行动 / 闪避（克制，上限低） */
   speed: { extraK: 0.25, extraCap: 0.06, dodgeK: 0.2, dodgeCap: 0.08 },
+  /* v3 每日/每周目标：进度存 S.quest；离线跨日/跨周在 checkDaily 正确重置 */
+  quests: {
+    daily: [
+      { id: 'field', name: '野外斩妖', desc: '野外战斗胜利', goal: 40, key: 'field', reward: { xianyu: 25, lsSec: 90 } },
+      { id: 'tower', name: '闯锁妖塔', desc: '完成一次闯塔', goal: 1, key: 'tower', reward: { eggs: { fan: 2 } } },
+      { id: 'gift',  name: '赠礼同伴', desc: '赠送灵石或不老根', goal: 1, key: 'gift', reward: { ticket: 1 } },
+      { id: 'egg',   name: '开启灵宠蛋', desc: '开启任意灵宠蛋', goal: 3, key: 'egg', reward: { xianyu: 20 } }
+    ],
+    weekly: [
+      { id: 'fieldW', name: '本周斩妖', desc: '野外胜利累计', goal: 250, key: 'field', reward: { xianyu: 120, eggs: { ling: 1 } } },
+      { id: 'towerW', name: '本周闯塔', desc: '完成闯塔次数', goal: 6, key: 'tower', reward: { ticket: 2, xianyu: 60 } },
+      { id: 'giftW',  name: '本周赠礼', desc: '赠礼次数', goal: 6, key: 'gift', reward: { xianyu: 50, lsSec: 200 } }
+    ]
+  },
+  /* v3 假人轻量成长：天榜随日历推进；偶尔假邀观礼 / 塔压 */
+  botsExtra: { inviteChance: 0.12, pressureChance: 0.08, topBoost: 0.04 },
   /* 地图掉落侧重：四类轮换，期望日产大致守恒（加权均值 ≈ 1） */
   mapFocus: {
     keys: ['exp', 'gear', 'egg', 'lingshi'],
@@ -536,7 +552,13 @@ const CFG = {
     enhanceStep: 0.08, enhanceCost: 400, enhanceCostPow: 1.6, enhanceDecay: 0.92, enhanceRateMin: 0.01, enhancePity: 100, sellBase: 10, bagCap: 40
   },
   trib: { base: 50, perSpectator: 1, maxSpectators: 10, pillBonus: 5, maxPills: 3, maxRate: 95, failLossFrac: 0.15, cooldown: 1800, compSpectators: 2, successExpBonus: 0.1, inviteMax: 3, xinmoBonus: 5, xinmoCap: 5 }, // failLoss 15%；失败叠心魔 buff，下次成功率 +5%/层（上限 5 层）
-  dongfu: { unlockL: 40, plotsStart: 2, plotsMax: 6, plotCost: [200, 400, 800, 1600], seedCost: 50, growSec: 14400, harvest: 3 },
+  dongfu: {
+    unlockL: 40, plotsStart: 2, plotsMax: 6, plotCost: [200, 400, 800, 1600], seedCost: 50, growSec: 14400, harvest: 3,
+    /* 洞府建筑升级（花灵石）：聚灵阵↑打坐、药田↑生长/产量、炼丹炉↑成功率 */
+    juling: { max: 10, baseCost: 800, costMul: 2.2, medPer: 0.02 },       // 每级打坐 +3.5%
+    farm:   { max: 8,  baseCost: 600, costMul: 2.0, growPer: 0.07, harvPer: 0.4 }, // 生长 -7%/级，产量 +0.4/级
+    furnace:{ max: 8,  baseCost: 700, costMul: 2.1, ratePer: 0.025, herbSave: 0.04 } // 成功率 +2.5%/级，耗草 -4%/级（下限 1）
+  },
   alchemy: {
     baseRate: 0.6, perLv: 0.03, maxRate: 0.95,
     recipes: {
@@ -712,7 +734,8 @@ function newState(name, sect) {
     equip: { weapon: { slot: 'weapon', ilvl: 0, q: 0 }, armor: { slot: 'armor', ilvl: 0, q: 0 }, shoes: null, ring: null }, enh: { weapon: 0, armor: 0, shoes: 0, ring: 0 }, enhFail: { weapon: 0, armor: 0, shoes: 0, ring: 0 },
     buffs: { med: 0, field: 0 }, daily: { date: '', signed: false, towerLeft: CFG.tower.daily, xiuwei: 0, watchLeft: CFG.watch.daily, merc: false, gift: 0, giftH: 0 },
     plots: [], herbs: 4, pills: { xiuwei: 1, med: 1, field: 1, trib: 0 }, alchemyExp: 0, tower: { record: 0 },
-    botSeed: Math.floor(Math.random() * 1e9), botAff: {}, trib: null, tribCooldownT: 0, xinmo: 0, gateClear: {}, gateCdT: 0, mer: { atk: 0, hp: 0, spd: 0, respec: 0 }, autoBreak: false, autoEquip: true, speed: 1,
+    df: { juling: 0, farm: 0, furnace: 0 }, quest: { day: '', week: '', d: {}, w: {}, dClaim: {}, wClaim: {} },
+    botSeed: Math.floor(Math.random() * 1e9), botAff: {}, trib: null, tribCooldownT: 0, xinmo: 0, gateClear: {}, gateCdT: 0, mer: { atk: 0, hp: 0, spd: 0, respec: 0, ticket: 0 }, autoBreak: false, autoEquip: true, speed: 1,
     stats: { battles: 0, wins: 0, kills: 0, tribOK: 0, tribFail: 0, playSec: 0 }, finished: false, finishT: 0,
     chatNextT: 10, tribEvents: [], lastBotT: -999,
     pets: [], petOn: 0, petUid: 0, eggs: { fan: CFG.pet.startEggs, ling: 0, xian: 0 }, frag: 0, pity: 0, signDays: 0, petStat: { opened: 0, xian: 0 }
@@ -742,7 +765,11 @@ const botActive = b => b.L >= 0 && !(b.quitT && S.serverT - b.joinT > b.quitT);
 function botStats(b, mul = 1) { const s = baseStats(b.L); s.atk *= b.gear * mul; s.hp *= b.gear * mul; if (b.sect === '一剑宗') s.atk *= 1.2; return s; }
 function updateBots(force) {
   if (!force && S.serverT - S.lastBotT < CFG.bots.updateEvery) return; S.lastBotT = S.serverT;
-  for (const b of BOTS) b.L = botLevelAt(b, S.serverT);
+  const boost = 1 + (CFG.botsExtra && CFG.botsExtra.topBoost || 0) * Math.min(1, S.serverT / (14 * 86400));
+  for (const b of BOTS) {
+    const t = (b.arch === '氪佬' || b.arch === '肝帝') ? S.serverT * boost : S.serverT;
+    b.L = botLevelAt(b, t);
+  }
 }
 function botPower(b) { const s = botStats(b); return power(s) + (b.pet ? power(petStats(b.pet, s)) : 0); } // 天榜战力含灵宠
 function charPower(s, pet) { return power(s) + (pet ? power(petStats(pet, s)) : 0); }
@@ -755,16 +782,23 @@ const CHAT = {
   reply: ['野外比打坐快，记得吃寻妖丹', '同伴选道天宗，全队身法 +15%', '元婴开洞府，种不老根炼丹', '多叫人围观渡劫，一人加 1%'],
   idle: ['今日份打坐完成，下线养老', '佛系修仙，不卷不卷', '天榜前十的大佬们太强了', '求个师父带带', '今天黑市有便宜丹药吗', '雷劫好可怕，第九道差点没扛住'],
   kolao: ['收徒弟，元婴以上，日常带锁妖塔', '本道友今日渡劫，诸位捧场必有厚报', '谁家仙兽资质过千了？'],
-  congrats: ['恭喜{player}道友突破！', '{player}这修炼速度可以啊', '{player}道友带带我~']
+  congrats: ['恭喜{player}道友突破！', '{player}这修炼速度可以啊', '{player}道友带带我~'],
+  invite: ['{player}道友，本座即将渡劫，可否来观礼？事成必有厚礼', '{player}可愿同往锁妖塔一战？天榜压力好大', '天榜又被卷上去了……{player}道友可有对策？'],
+  pressure: ['天榜前十又换人了，卷不动了', '听说有人一夜连闯五十层锁妖塔', '本周目标还没做完，先下了']
 };
 function fillT(t, b) { const m = MAPS[Math.min(MAPS.length - 1, Math.floor(Math.max(0, b.L) / 5))]; return t.replace('{map}', m.name).replace('{lv}', lvName(Math.max(0, b.L))).replace('{sect}', pick(Object.keys(CFG.sects))).replace('{q}', pick(['紫色', '黄色', '红色'])).replace('{player}', S.name); }
 function chatTick() {
   if (S.serverT < S.chatNextT) return;
   S.chatNextT = S.serverT + rint(CFG.chat.minGap, CFG.chat.maxGap);
   const act = BOTS.filter(botActive); if (!act.length) return;
-  const b = pick(act), x = R();
+  const b = pick(act), x = R(), BE = CFG.botsExtra || {};
   if (x < 0.18) { // 渡劫公告（可围观）
     const cands = act.filter(o => o.L >= 40 && o.L < CFG.maxL); if (cands.length) { const o = pick(cands); S.tribEvents.push({ id: Date.now() + '' + R(), bot: o.id, from: o.L, until: S.serverT + CFG.watch.eventLife }); log(`【世界】${o.name}：吾即将渡劫（${lvName(o.L)}→${lvName(o.L + 1)}），恳请诸位道友前来围观助阵！`, 'chat'); return; }
+  }
+  else if (x < 0.18 + (BE.inviteChance || 0) && S.L >= 20) {
+    log(`【私信】${b.name}：${fillT(pick(CHAT.invite), b).replace(/\{player\}/g, S.name)}`, 'chat');
+  } else if (x < 0.18 + (BE.inviteChance || 0) + (BE.pressureChance || 0)) {
+    log(`【世界】${b.name}：${pick(CHAT.pressure)}`, 'chat');
   }
   let tpl;
   if (b.arch === '萌新' && x < 0.5) tpl = pick(CHAT.newbie);
@@ -824,7 +858,7 @@ function deployPet(uid, who = 'me') {
 function autoPets() { const ps = playerStats(), l = S.pets.slice().sort((a, b) => petScore(b, ps) - petScore(a, ps)); S.petOn = l[0] ? l[0].uid : 0; S.comp.petOn = l[1] ? l[1].uid : 0; } // 按实际属性：最强给玩家，第二给同伴
 function openEgg(kind, quiet) {
   if (S.eggs[kind] <= 0) return null;
-  S.eggs[kind]--; const g = rollGrade(kind), p = makePet(pick(CFG.pet.species).id, g); p.uid = ++S.petUid;
+  S.eggs[kind]--; questAdd('egg'); const g = rollGrade(kind), p = makePet(pick(CFG.pet.species).id, g); p.uid = ++S.petUid;
   S.petStat.opened++; if (g === 2) S.petStat.xian++;
   if (S.pets.length >= CFG.pet.cap && g === 0 && !hasXT(p)) { const f = petFrag(p); S.frag += f; if (!quiet) log(`灵宠栏已满，${petName(p)} 自动分解为碎片 ×${f}`, 'sys'); return p; } // 先天/混元永不自动分解
   S.pets.push(p);
@@ -850,15 +884,22 @@ function gainEgg(kind, n, why) { if (n <= 0) return; S.eggs[kind] += n; if (why)
 function merNodes(line) { const pts = (S.mer && S.mer[line]) || 0; return CFG.meridian.lines[line].nodes.filter(n => pts >= n.at); }
 function merPts() { return S.L * CFG.meridian.ptsPerLevel; }
 function merFree() { const m = S.mer || {}; return Math.max(0, merPts() - (m.atk || 0) - (m.hp || 0) - (m.spd || 0)); }
-function merAdd(line, n = 1) { n = Math.min(n, merFree()); if (n <= 0) return log('没有可分配的经脉点（每突破一层得 1 点）。', 'warn'); S.mer[line] += n; const nd = CFG.meridian.lines[line].nodes.find(x => S.mer[line] >= x.at && S.mer[line] - n < x.at); log(`${CFG.meridian.lines[line].name} +${n}（${S.mer[line]}）${nd ? '，冲开窍穴「' + nd.name + '」：' + nd.desc : ''}`, nd ? 'big' : 'gain'); }
-function merRespecCost() { return S.mer.respec ? Math.floor(monLingshi(S.L) * 60) : 0; }
-function merRespec() { const c = merRespecCost(); if (S.lingshi < c) return log('灵石不足，无法洗点。', 'warn'); S.lingshi -= c; S.mer.atk = S.mer.hp = S.mer.spd = 0; S.mer.respec = (S.mer.respec || 0) + 1; log(`经脉重置${c ? '，花费灵石 ' + fmt(c) : '（首次免费）'}，可重新分配。`, 'gain'); }
+function merAdd(line, n = 1) { n = Math.min(n, merFree()); if (n <= 0) return log('没有可分配的经脉点（每突破一层得 1 点）。', 'warn'); const before = S.mer[line]; S.mer[line] += n; const opened = CFG.meridian.lines[line].nodes.filter(x => S.mer[line] >= x.at && before < x.at); if (opened.length) log(`${CFG.meridian.lines[line].name} +${n}（${S.mer[line]}），冲开窍穴：` + opened.map(nd => '「' + nd.name + '」：' + nd.desc).join('；'), 'big'); else log(`${CFG.meridian.lines[line].name} +${n}（${S.mer[line]}）`, 'gain'); }
+function merRespecCost() { return S.mer.respec && !(S.mer.ticket > 0) ? Math.floor(monLingshi(S.L) * 60) : 0; } // ticket → 免费
+function merRespec() {
+  const useTicket = S.mer.respec && S.mer.ticket > 0;
+  const c = useTicket ? 0 : merRespecCost();
+  if (!useTicket && S.lingshi < c) return log('灵石不足，无法洗点。', 'warn');
+  if (useTicket) S.mer.ticket--; else S.lingshi -= c;
+  S.mer.atk = S.mer.hp = S.mer.spd = 0; S.mer.respec = (S.mer.respec || 0) + 1;
+  log(`经脉重置${useTicket ? '（消耗洗点券 ×1）' : c ? '，花费灵石 ' + fmt(c) : '（首次免费）'}，可重新分配。`, 'gain');
+}
 function affLv() { const a = (S.comp && S.comp.aff) || 0, L = CFG.affinity.levels; let i = 0; while (i + 1 < L.length && a >= L[i + 1]) i++; return i; }
 function addAff(v) { const l0 = affLv(); S.comp.aff = (S.comp.aff || 0) + v; const l1 = affLv(); if (l1 > l0) log(`与 ${S.comp.name} 的好感提升至「${CFG.affinity.names[l1]}」：${CFG.affinity.perks[l1]}`, 'big'); }
 function giftComp(kind) {
   const G = CFG.affinity.gift;
-  if (kind === 'ls') { if (S.daily.gift >= G.daily) return log('今日灵石赠礼次数已满。', 'warn'); const c = Math.floor(monLingshi(S.L) * G.lsSec); if (S.lingshi < c) return log('灵石不足。', 'warn'); S.lingshi -= c; S.daily.gift++; log(`赠予 ${S.comp.name} 灵石 ${fmt(c)}，好感 +${G.lsAff}`, 'gain'); addAff(G.lsAff); }
-  else { if (S.daily.giftH >= G.daily) return log('今日药草赠礼次数已满。', 'warn'); if (S.herbs < 1) return log('没有不老根。', 'warn'); S.herbs--; S.daily.giftH++; log(`赠予 ${S.comp.name} 不老根 ×1，好感 +${G.herbAff}`, 'gain'); addAff(G.herbAff); }
+  if (kind === 'ls') { if (S.daily.gift >= G.daily) return log('今日灵石赠礼次数已满。', 'warn'); const c = Math.floor(monLingshi(S.L) * G.lsSec); if (S.lingshi < c) return log('灵石不足。', 'warn'); S.lingshi -= c; S.daily.gift++; log(`赠予 ${S.comp.name} 灵石 ${fmt(c)}，好感 +${G.lsAff}`, 'gain'); addAff(G.lsAff); questAdd('gift'); }
+  else { if (S.daily.giftH >= G.daily) return log('今日药草赠礼次数已满。', 'warn'); if (S.herbs < 1) return log('没有不老根。', 'warn'); S.herbs--; S.daily.giftH++; log(`赠予 ${S.comp.name} 不老根 ×1，好感 +${G.herbAff}`, 'gain'); addAff(G.herbAff); questAdd('gift'); }
 }
 function bondOf(a, b) { if (!a || !b) return null; return CFG.bonds.find(x => (x.a === a.sp && x.b === b.sp) || (x.a === b.sp && x.b === a.sp)) || null; }
 function charStats(sect, who) { // 玩家与同伴共用：境界、装备、强化完全同步，只有宗门不同；who='me' 加经脉，'comp' 加好感
@@ -1081,7 +1122,7 @@ function simWinRate(map, n = 15) { let w = 0; for (let i = 0; i < n; i++) if (fi
 function mapMul(map) { return CFG.mapFocus.mul[map.focus] || { exp: 1, gear: 1, egg: 1, ls: 1 }; }
 
 /* ==================== 修为与加成 ==================== */
-function medMult() { let m = 1; if (S.sect === '道天宗') m += CFG.sects['道天宗'].med; if (S.buffs.med > 0) m += CFG.buff.bonus; return m; }
+function medMult() { let m = 1; if (S.sect === '道天宗') m += CFG.sects['道天宗'].med; if (S.buffs.med > 0) m += CFG.buff.bonus; if (S.df) m += (S.df.juling || 0) * CFG.dongfu.juling.medPer; return m; }
 function daoGong() { return S.sect === '道天宗' || S.comp.sect === '道天宗'; } // 道法共修：自己或同伴是道天宗即生效（全队身法 +15%），不叠加
 const fieldBase = () => 1 + (S.sect === '魔天宗' ? CFG.sects['魔天宗'].field : 0);
 function fieldMult() { return fieldBase() + (S.buffs.field > 0 ? CFG.buff.bonus : 0); }
@@ -1133,7 +1174,7 @@ function settleField() {
     const fm = mapMul(map);
     const e = monExp(map.ml) * (st.kills + (st.affE || 0)) * fieldMult() * fm.exp, x0 = S.exp; gainExp(e); out.expRaw = e; out.exp = S.exp - x0;
     const ls = Math.floor(monLingshi(map.ml) * (st.kills + (st.affL || 0)) * fm.ls); S.lingshi += ls; out.ls = ls; out.affB = (st.affE || st.affL) ? 1 : 0;
-    addAff(CFG.affinity.perWin);
+    addAff(CFG.affinity.perWin); questAdd('field');
     for (const it of st.items) { const r = addItem(it, true); out.sell += r.sell; out.items.push({ name: itemName(it), q: it.q, to: r.to }); if (it.q >= 3) log(`${map.name} 掉落 ${itemName(it)}！`, 'rare'); }
     S.eggs.fan += st.fan; S.eggs.ling += st.ling; S.herbs += st.herb;
     if (st.ling) log(`${map.name} 精英妖兽掉落 灵蛋！`, 'rare');
@@ -1196,6 +1237,7 @@ function advance(dt) { let rem = dt; while (rem > 0) { const s = Math.min(5, rem
 function checkDaily(force) {
   const d = force === 'sim' ? 'sim' + Math.floor(S.serverT / 86400) : today();
   if (force || S.daily.date !== d) { S.daily = { date: d, signed: false, towerLeft: CFG.tower.daily, xiuwei: 0, watchLeft: CFG.watch.daily, merc: false, gift: 0, giftH: 0 }; if (S.created) log('新的一天开始了：签到、锁妖塔、修为丹、围观次数已重置。', 'sys'); }
+  ensureQuest(force === 'sim' || (S.daily && String(S.daily.date).startsWith('sim')) ? 'sim' : false);
 }
 /* 结算一段时间 c 秒（期望值 + 抽样战斗），离线与时间线模拟共用 */
 function settleChunk(c, acc, N = 20) {
@@ -1208,6 +1250,7 @@ function settleChunk(c, acc, N = 20) {
   const battles = sr0(c / (cyc / N)), wins = sr0(battles * wr), kills = wins * avgK;
   const fm = mapMul(map), A = CFG.affix, pa = A.chance[Math.min(9, map.realm)] * (1 + A.dual), nT = Object.keys(A.types).length; // 词缀额外奖励按期望
   const affE = kills * pa * (A.loot.heal.exp + A.loot.other.exp * (nT - 2)) / nT, affL = kills * pa * A.loot.bomb.ls / nT;
+  acc.affE = (acc.affE || 0) + affE; acc.affL = (acc.affL || 0) + affL;
   const ex = monExp(map.ml) * (kills + affE) * fm.exp;
   const fE = ex * fieldBase() + ex * CFG.buff.bonus * (fieldB / c);
   const sr = v => Math.floor(v) + (R() < v % 1 ? 1 : 0);
@@ -1216,7 +1259,7 @@ function settleChunk(c, acc, N = 20) {
   for (let i = 0; i < drops; i++) { const it = rollItem(map.ml); if (acc.items < 15) { addItem(it, true); acc.items++; } else { S.lingshi += sellPrice(it); acc.sold++; } }
   S.herbs += sr(wins * CFG.field.herbRate);
   { const f = sr(kills * CFG.pet.fanDrop * fm.egg), l = map.elite ? sr(kills * CFG.pet.lingElite * fm.egg) : 0; S.eggs.fan += f; S.eggs.ling += l; acc.eggF += f; acc.eggL += l; }
-  acc.battles += battles; acc.wins += wins; S.stats.battles += battles; S.stats.wins += wins; S.stats.kills += Math.round(kills);
+  acc.battles += battles; acc.wins += wins; S.stats.battles += battles; S.stats.wins += wins; S.stats.kills += Math.round(kills); if (wins) questAdd('field', wins);
   acc.med += medE; acc.field += fE; acc.got += medE + fE; gainExp(medE + fE);
   S.buffs.med = Math.max(0, S.buffs.med - c); S.buffs.field = Math.max(0, S.buffs.field - c);
   S.serverT += c; S.stats.playSec += c; S.worldT = (S.worldT || 0) + c; updateBots(true);
@@ -1228,11 +1271,14 @@ let lastOffline = null; // 最近一次离线结算摘要（仅界面展示用�
 function settleOffline(dtReal) {
   const cap = CFG.offlineCapHours * 3600, dt = Math.min(dtReal, cap);
   if (dt < 30) return;
-  const l0 = S.lingshi, L0 = S.L, acc = { got: 0, med: 0, field: 0, items: 0, sold: 0, battles: 0, wins: 0, eggF: 0, eggL: 0 };
+  const l0 = S.lingshi, L0 = S.L, aff0 = (S.comp && S.comp.aff) || 0, mer0 = { atk: S.mer.atk, hp: S.mer.hp, spd: S.mer.spd };
+  const acc = { got: 0, med: 0, field: 0, items: 0, sold: 0, battles: 0, wins: 0, eggF: 0, eggL: 0, affE: 0, affL: 0 };
   let rem = dt; while (rem > 0) { const c = Math.min(600, rem); rem -= c; settleChunk(c, acc); }
   if (dtReal > dt) { S.serverT += dtReal - dt; S.worldT = (S.worldT || 0) + dtReal - dt; updateBots(true); }
+  const opened = [];
+  for (const k of ['atk', 'hp', 'spd']) CFG.meridian.lines[k].nodes.forEach(n => { if (S.mer[k] >= n.at && mer0[k] < n.at) opened.push(CFG.meridian.lines[k].name + '·' + n.name); });
   log(`离线期间：打坐修为 +${fmt(acc.med)}；野外·${MAPS[S.mapId].name} 战斗约 ${acc.battles} 场，胜 ${acc.wins} 场，修为 +${fmt(acc.field)}`, 'sys');
-  lastOffline = { fresh: true, dt: dtReal, capped: dtReal > cap, med: acc.med, field: acc.field, ls: S.lingshi - l0, items: acc.items, battles: acc.battles, levels: S.L - L0, eggF: acc.eggF, eggL: acc.eggL };
+  lastOffline = { fresh: true, dt: dtReal, capped: dtReal > cap, med: acc.med, field: acc.field, ls: S.lingshi - l0, items: acc.items, battles: acc.battles, wins: acc.wins, levels: S.L - L0, eggF: acc.eggF, eggL: acc.eggL, affE: acc.affE, affL: acc.affL, affGain: ((S.comp && S.comp.aff) || 0) - aff0, merFree: merFree(), merOpened: opened, suggest: merSuggest(), map: MAPS[S.mapId].name };
   const capped = S.exp >= needExp(S.L) * CFG.expCapMul - 1;
   log(`—— 离线 ${fmtT(dtReal)}${dtReal > cap ? '（超出上限，按 ' + CFG.offlineCapHours + ' 小时结算）' : ''} ——\n获得修为 ${fmt(acc.got)}${S.L > L0 ? '，自动突破 ' + (S.L - L0) + ' 层至 ' + lvName(S.L) : ''}${capped ? '（修为已达囤积上限，请尽快突破/渡劫）' : ''}，灵石 +${fmt(S.lingshi - l0)}${acc.items ? '，装备 ' + acc.items + ' 件' : ''}${acc.sold ? '（另有 ' + acc.sold + ' 件自动出售）' : ''}${acc.eggF ? '，凡蛋 ' + acc.eggF + ' 个' : ''}${acc.eggL ? '，灵蛋 ' + acc.eggL + ' 个' : ''}`, 'big');
 }
@@ -1364,7 +1410,7 @@ function towerStart() {
   if (S.L < CFG.tower.unlockL) return log(`锁妖塔需${lvName(CFG.tower.unlockL)}开放。`, 'warn');
   if (S.daily.towerLeft <= 0) return log('今日锁妖塔次数已用完。', 'warn');
   if (!S.hired.length) log('提示：可雇佣 1 名佣兵与你和同伴一起闯塔。', 'sys');
-  S.daily.towerLeft--;
+  S.daily.towerLeft--; questAdd('tower');
   const start = Math.max(1, S.tower.record - CFG.tower.startBack);
   let F = start, cleared = 0, e = 0, ls = 0, xy = 0, items = 0, xe = 0;
   log(`携同伴 ${S.comp.name}${S.hired.length ? '与佣兵 ' + BOTS[S.hired[0].bot].name : ''}进入锁妖塔，从第 ${start} 层开始（个人记录 - ${CFG.tower.startBack}）。`, 'sys');
@@ -1403,16 +1449,78 @@ function mercRegister() {
 }
 
 /* ==================== 洞府 ==================== */
+function dfCost(kind) {
+  const C = CFG.dongfu[kind], lv = (S.df && S.df[kind]) || 0;
+  if (lv >= C.max) return null;
+  return Math.floor(C.baseCost * Math.pow(C.costMul, lv) * Math.max(1, monLingshi(Math.max(40, S.L)) / monLingshi(40)));
+}
+function dfUpgrade(kind) {
+  const names = { juling: '聚灵阵', farm: '药田', furnace: '炼丹炉' }, c = dfCost(kind);
+  if (c == null) return log(names[kind] + '已达最高等级。', 'warn');
+  if (S.lingshi < c) return log('灵石不足，无法升级' + names[kind] + '。', 'warn');
+  S.lingshi -= c; S.df[kind]++; const lv = S.df[kind];
+  const tip = kind === 'juling' ? `打坐修为 +${(lv * CFG.dongfu.juling.medPer * 100).toFixed(1)}%`
+    : kind === 'farm' ? `生长加快、产量提升（生长 ${fmtT(farmGrowSec())}）`
+    : `炼丹成功率 ${(alchRate() * 100).toFixed(0)}%`;
+  log(`${names[kind]}升至 ${lv} 级（花费灵石 ${fmt(c)}）：${tip}`, 'big');
+}
+function weekId() { const t = new Date(); const onejan = new Date(t.getFullYear(), 0, 1); const w = Math.ceil((((t - onejan) / 86400000) + onejan.getDay() + 1) / 7); return t.getFullYear() + '-W' + w; }
+function weekIdSim() { return 'simW' + Math.floor(S.serverT / (86400 * 7)); }
+function ensureQuest(force) {
+  const d = force === 'sim' ? 'sim' + Math.floor(S.serverT / 86400) : today();
+  const w = force === 'sim' ? weekIdSim() : weekId();
+  if (!S.quest) S.quest = { day: '', week: '', d: {}, w: {}, dClaim: {}, wClaim: {} };
+  if (S.quest.day !== d) { S.quest.day = d; S.quest.d = {}; S.quest.dClaim = {}; }
+  if (S.quest.week !== w) { S.quest.week = w; S.quest.w = {}; S.quest.wClaim = {}; }
+}
+function questAdd(key, n = 1) {
+  if (!S || !S.quest) return;
+  ensureQuest(S.daily && String(S.daily.date).startsWith('sim') ? 'sim' : false);
+  S.quest.d[key] = (S.quest.d[key] || 0) + n;
+  S.quest.w[key] = (S.quest.w[key] || 0) + n;
+}
+function questClaim(period, id) {
+  const Q = CFG.quests[period === 'd' ? 'daily' : 'weekly'], q = Q.find(x => x.id === id);
+  if (!q) return;
+  const bag = period === 'd' ? S.quest.d : S.quest.w, claim = period === 'd' ? S.quest.dClaim : S.quest.wClaim;
+  if (claim[id]) return log('已领取该奖励。', 'warn');
+  if ((bag[q.key] || 0) < q.goal) return log('目标尚未完成。', 'warn');
+  claim[id] = 1; applyQuestReward(q.reward); log(`领取${period === 'd' ? '每日' : '每周'}目标「${q.name}」奖励！`, 'big');
+}
+function applyQuestReward(rw) {
+  if (rw.xianyu) { S.xianyu += rw.xianyu; log(`仙玉 +${rw.xianyu}`, 'gain'); }
+  if (rw.lsSec) { const v = Math.floor(monLingshi(S.L) * rw.lsSec); S.lingshi += v; log(`灵石 +${fmt(v)}`, 'gain'); }
+  if (rw.ticket) { S.mer.ticket = (S.mer.ticket || 0) + rw.ticket; log(`经脉洗点券 ×${rw.ticket}`, 'gain'); }
+  if (rw.eggs) for (const [k, n] of Object.entries(rw.eggs)) { S.eggs[k] = (S.eggs[k] || 0) + n; log(`${({ fan: '凡蛋', ling: '灵蛋', xian: '仙蛋' })[k]} ×${n}`, 'gain'); }
+}
+function merSuggest() {
+  const free = merFree(); if (free <= 0) return null;
+  const plan = { atk: 0, hp: 0, spd: 0 }, order = ['atk', 'hp', 'atk', 'spd', 'hp', 'atk'];
+  let left = free, g = 0;
+  const tmp = { atk: S.mer.atk, hp: S.mer.hp, spd: S.mer.spd };
+  while (left > 0 && g++ < 500) {
+    const k = order.find(x => { const nx = CFG.meridian.lines[x].nodes.find(n => tmp[x] < n.at); return nx; }) || (tmp.atk <= tmp.hp && tmp.atk <= tmp.spd ? 'atk' : tmp.hp <= tmp.spd ? 'hp' : 'spd');
+    tmp[k]++; plan[k]++; left--;
+  }
+  return plan;
+}
+function merApplySuggest() {
+  const p = merSuggest(); if (!p) return log('没有可分配的经脉点。', 'warn');
+  for (const k of ['atk', 'hp', 'spd']) if (p[k]) merAdd(k, p[k]);
+}
 function ensurePlots() { while (S.plots.length < CFG.dongfu.plotsStart) S.plots.push({ readyT: 0, planted: false }); }
-function plant(i) { const p = S.plots[i]; if (p.planted) return; if (S.lingshi < CFG.dongfu.seedCost) return log('灵石不足以购买种子。', 'warn'); S.lingshi -= CFG.dongfu.seedCost; p.planted = true; p.readyT = S.serverT + CFG.dongfu.growSec; log(`药田 ${i + 1} 种下不老根，${fmtT(CFG.dongfu.growSec)} 后成熟。`, 'sys'); }
-function harvest(i) { const p = S.plots[i]; if (!p.planted || S.serverT < p.readyT) return; const n = CFG.dongfu.harvest + (R() < 0.3 ? 1 : 0); S.herbs += n; p.planted = false; log(`药田 ${i + 1} 收获不老根 ×${n}`, 'gain'); }
+function farmGrowSec() { const lv = (S.df && S.df.farm) || 0; return Math.max(3600, Math.floor(CFG.dongfu.growSec * (1 - Math.min(0.55, lv * CFG.dongfu.farm.growPer)))); }
+function farmHarvestN() { const lv = (S.df && S.df.farm) || 0; return CFG.dongfu.harvest + lv * CFG.dongfu.farm.harvPer; }
+function plant(i) { const p = S.plots[i]; if (p.planted) return; if (S.lingshi < CFG.dongfu.seedCost) return log('灵石不足以购买种子。', 'warn'); S.lingshi -= CFG.dongfu.seedCost; p.planted = true; p.readyT = S.serverT + farmGrowSec(); log(`药田 ${i + 1} 种下不老根，${fmtT(farmGrowSec())} 后成熟。`, 'sys'); }
+function harvest(i) { const p = S.plots[i]; if (!p.planted || S.serverT < p.readyT) return; const base = farmHarvestN(), n = Math.floor(base) + (R() < (base % 1) + 0.3 ? 1 : 0); S.herbs += n; p.planted = false; log(`药田 ${i + 1} 收获不老根 ×${n}`, 'gain'); }
 function harvestAll() { let c = 0; S.plots.forEach((p, i) => { if (p.planted && S.serverT >= p.readyT) { harvest(i); c++; } if (!p.planted && S.lingshi >= CFG.dongfu.seedCost) plant(i); }); if (!c) log('暂无成熟的药草（空地已自动补种）。', 'sys'); }
 function buyPlot() { const n = S.plots.length; if (n >= CFG.dongfu.plotsMax) return; const c = CFG.dongfu.plotCost[n - CFG.dongfu.plotsStart]; if (S.xianyu < c) return log('仙玉不足。', 'warn'); S.xianyu -= c; S.plots.push({ readyT: 0, planted: false }); log(`开辟新药田，花费仙玉 ${c}。`, 'gain'); }
 const alchLv = () => Math.floor(Math.sqrt(S.alchemyExp));
-const alchRate = () => Math.min(CFG.alchemy.maxRate, CFG.alchemy.baseRate + alchLv() * CFG.alchemy.perLv);
+const alchRate = () => Math.min(CFG.alchemy.maxRate, CFG.alchemy.baseRate + alchLv() * CFG.alchemy.perLv + ((S.df && S.df.furnace) || 0) * CFG.dongfu.furnace.ratePer);
+function craftHerbCost(r) { const save = ((S.df && S.df.furnace) || 0) * CFG.dongfu.furnace.herbSave; return Math.max(1, Math.ceil(r.herbs * (1 - save))); }
 function craft(key) {
-  const r = CFG.alchemy.recipes[key]; if (S.herbs < r.herbs || S.lingshi < r.lingshi) return log('材料不足。', 'warn');
-  S.herbs -= r.herbs; S.lingshi -= r.lingshi; S.alchemyExp++;
+  const r = CFG.alchemy.recipes[key], hc = craftHerbCost(r); if (S.herbs < hc || S.lingshi < r.lingshi) return log('材料不足。', 'warn');
+  S.herbs -= hc; S.lingshi -= r.lingshi; S.alchemyExp++;
   if (R() < alchRate()) { S.pills[key]++; log(`炼丹成功：${r.name} ×1`, 'gain'); } else log(`炉火失控，${r.name} 炼制失败……（炼丹熟练度仍有提升）`, 'warn');
 }
 function usePill(key) {
@@ -1458,7 +1566,10 @@ function load() {
   if (!o) { S = null; return false; }
   const d = newState(o.name, o.sect); S = Object.assign(d, o); S.daily = Object.assign(d.daily, o.daily || {}); S.pills = Object.assign(d.pills, o.pills || {}); S.buffs = Object.assign(d.buffs, o.buffs || {}); S.eggs = Object.assign(d.eggs, o.eggs || {}); S.petStat = Object.assign(d.petStat, o.petStat || {}); if (!Array.isArray(S.pets)) S.pets = []; S.pets.forEach(p => ensureApt(p)); // 旧存档迁移：补齐灵宠字段；旧灵宠补随机资质（攻/血系数）
   if (!S.enhFail) S.enhFail = { weapon: 0, armor: 0, shoes: 0, ring: 0 }; // 旧存档迁移：保底计数
-  if (!S.mer) S.mer = { atk: 0, hp: 0, spd: 0, respec: 0 }; if (S.comp.aff == null) S.comp.aff = 0; if (S.daily.gift == null) S.daily.gift = 0; if (S.daily.giftH == null) S.daily.giftH = 0;
+  if (!S.mer) S.mer = { atk: 0, hp: 0, spd: 0, respec: 0, ticket: 0 }; if (S.mer.ticket == null) S.mer.ticket = 0;
+  if (!S.df) S.df = { juling: 0, farm: 0, furnace: 0 }; for (const k of ['juling', 'farm', 'furnace']) if (S.df[k] == null) S.df[k] = 0;
+  if (!S.quest) S.quest = { day: '', week: '', d: {}, w: {}, dClaim: {}, wClaim: {} };
+  if (S.comp.aff == null) S.comp.aff = 0; if (S.daily.gift == null) S.daily.gift = 0; if (S.daily.giftH == null) S.daily.giftH = 0;
   if (S.xinmo == null) S.xinmo = 0; if (!S.gateClear) S.gateClear = {}; if (S.gateCdT == null) S.gateCdT = 0;
   if (!o.comp) S.comp = newComp(S.sect); else S.comp = Object.assign(newComp(S.sect), o.comp); // 旧存档迁移：假人队伍 → 同伴
   S.team = []; S.hired = (S.hired || []).slice(0, CFG.tower.mercMax); if (S.comp.petOn === S.petOn) S.comp.petOn = 0; if (S.comp.petOn && !S.pets.some(p => p.uid === S.comp.petOn)) S.comp.petOn = 0;
@@ -2616,7 +2727,7 @@ const FX = (() => {
       blit(c, s, sl.x + (1 - k) * (sl.flip ? 40 : -40), sl.y, { flip: sl.flip, a: k });
       c.globalAlpha = k; c.font = `700 11px ${KAI}`; c.textAlign = 'center'; c.fillStyle = sp.me ? '#ffd77a' : (sp.team ? '#9be8a8' : '#ffffff'); c.lineWidth = 3; c.strokeStyle = 'rgba(40,30,90,.8)'; c.strokeText(sp.name, sl.x, sl.y - sh2 * 1.02); c.fillText(sp.name, sl.x, sl.y - sh2 * 1.02);
       c.fillStyle = '#ff5a8a'; c.fillRect(sl.x - 14, sl.y - sh2 * 0.98, 28, 3); c.globalAlpha = 1; });
-    const ch = Math.min(H * 0.15, W * 0.24), cs = getSpr(o.center.name === S.name ? { type: 'human', sect: o.center.sect, me: true } : { type: 'human', sect: o.center.sect, hv: hvOf(o.center.name) }, 'stand', ch);
+    const ch = Math.min(H * 0.15, W * 0.24), cs = getSpr(o.center.look || (o.center.name === S.name ? { type: 'human', sect: o.center.sect, me: true } : { type: 'human', sect: o.center.sect, hv: hvOf(o.center.name) }), 'stand', ch);
     if (cl > 0) { const pg = c.createLinearGradient(px - 40, 0, px + 40, 0); pg.addColorStop(0, 'rgba(255,230,160,0)'); pg.addColorStop(0.5, `rgba(255,240,190,${0.7 * cl})`); pg.addColorStop(1, 'rgba(255,230,160,0)'); c.fillStyle = pg; c.fillRect(px - 40, 0, 80, py); }
     const fl = o.fallen, rise = o.plan && o.plan.fly && o.plan.ok ? cl * H * 0.25 : 0;
     blit(c, cs, px, py - 4 - rise, { a: 1 - fl * 0.6, rot: fl * 1.2, white: o.flash * 1.5 });
@@ -2684,7 +2795,7 @@ const FX = (() => {
       d.innerHTML = `<img src="${getSpr(gateLook(S.L - (plan.ok ? 0 : 0)), 'stand', 200).c.toDataURL()}" width="220"><div style="margin-top:8px">${esc(plan.msg)}</div><div style="font-size:12px;opacity:.7;margin-top:10px">点击继续</div>`;
       d.onclick = () => d.remove(); document.body.appendChild(d); setTimeout(() => d.remove(), 4200); }
     if (!P.ctx) return;
-    openOv({ type: 'trib', phase: 'result', t: 0, hp: 1, bolts: [], flash: 0, shake: 0, clear: 0, fallen: 0, si: 0, arr: {}, floats: [], plan: { ok: plan.ok, watch: false, fly: false, msg: plan.msg, specs: S.trib ? S.trib.specs : [], center: { name: plan.boss.name, sect: '魔天宗', hp: 1 } }, center: { name: plan.boss.name, sect: '魔天宗', hp: 1 } });
+    openOv({ type: 'trib', phase: 'result', t: 0, hp: 1, bolts: [], flash: 0, shake: 0, clear: 0, fallen: 0, si: 0, arr: {}, floats: [], plan: { ok: plan.ok, watch: false, fly: false, msg: plan.msg, specs: S.trib ? S.trib.specs : [], center: { name: plan.boss.name, sect: '魔天宗', hp: 1, look: gateLook(S.L) } }, center: { name: plan.boss.name, sect: '魔天宗', hp: 1, look: gateLook(S.L) } });
     renderFxUI();
   }
   return { sprURL: (look, pose, h) => getSpr(look, pose || 'stand', h || 100).c.toDataURL(), counts: () => ({ parts: parts.length, effs: effs.length, floats: floats.length, spr: spr.size }), init, pushBattle, resetField, showing, get popup() { return popup; }, viewChanged, portraitURL, get search() { return search; }, breakthrough, tribPrep, playTrib, playGate, closeOv, get ov() { return ov; }, get bv() { return bv; }, renderFxUI };
@@ -2822,12 +2933,13 @@ function dots() {
   const tower = S.L >= CFG.tower.unlockL && S.daily.towerLeft > 0;
   const pills = (S.pills.xiuwei > 0 && S.daily.xiuwei < CFG.pill.xiuweiDaily) || (S.pills.med > 0 && S.buffs.med <= 0) || (S.pills.field > 0 && S.buffs.field <= 0);
   const eggs = S.eggs.fan + S.eggs.ling + S.eggs.xian > 0;
-  const d = { pet: eggs, dongfu, sign: !S.daily.signed, tower, jiyuan: S.jiyuan >= CFG.jiyuange.cost, bag: upg, char: upg, merc: S.L >= CFG.merc.registerL && !S.daily.merc, watch, pills };
+  const qDot = (() => { ensureQuest(S.daily && String(S.daily.date).startsWith('sim') ? 'sim' : false); return CFG.quests.daily.some(q => (S.quest.d[q.key] || 0) >= q.goal && !S.quest.dClaim[q.id]) || CFG.quests.weekly.some(q => (S.quest.w[q.key] || 0) >= q.goal && !S.quest.wClaim[q.id]); })();
+  const d = { pet: eggs, dongfu, sign: !S.daily.signed, tower, jiyuan: S.jiyuan >= CFG.jiyuange.cost, bag: upg, char: upg || merFree() > 0, merc: S.L >= CFG.merc.registerL && !S.daily.merc, watch, pills, quests: qDot };
   d.travel = watch || tower; return d;
 }
 
 /* ---------- 顶部 / 底部状态 ---------- */
-const SIDE_L = [['dongfu', '洞府', 'cave'], ['sect', '宗门', 'sect'], ['rank', '天榜', 'rank'], ['jiyuan', '机缘', 'orb'], ['sign', '签到', 'cal']];
+const SIDE_L = [['quests', '目标', 'star'], ['dongfu', '洞府', 'cave'], ['sect', '宗门', 'sect'], ['rank', '天榜', 'rank'], ['jiyuan', '机缘', 'orb'], ['sign', '签到', 'cal']];
 const SIDE_R = [['char', '角色', 'person'], ['pet', '灵宠', 'paw'], ['tower', '锁妖塔', 'tower'], ['comp', '同伴', 'team'], ['merc', '佣兵', 'merc'], ['settings', '设置', 'gear']];
 const FIELD_BAR = [['maps', '换图', 'map'], ['comp', '同伴', 'team'], ['tower', '锁妖塔', 'tower'], ['watch', '观礼', 'eye'], ['merc', '佣兵', 'merc']];
 function buildChrome() {
@@ -2858,8 +2970,8 @@ function renderStatus() {
 }
 function refreshUI() { renderStatus(); renderPanel(); renderNav(); save(); }
 const NAV = [['home', '修炼', 'lotus'], ['char', '角色', 'person'], ['bag', '纳戒', 'ring'], ['travel', '云游', 'cloud'], ['dongfu', '洞府', 'cave'], ['social', '人脉', 'people']];
-const PARENT = { meridian: 'char', pet: 'char', petshop: 'pet', maps: 'travel', comp: 'travel', tower: 'travel', watch: 'travel', jiyuan: 'travel', trib: 'home', rank: 'social', chat: 'social', merc: 'social', sect: 'char', pills: 'home', sign: 'home', settings: 'home', offline: 'home' };
-const TITLES = { meridian: '功法经脉', pet: '灵宠', petshop: '碎片兑换', create: '踏入仙途', char: '角色', bag: '纳戒', travel: '云游', maps: '选择地图', comp: '同伴', tower: '锁妖塔', watch: '渡劫观礼', jiyuan: '机缘阁', dongfu: '洞府', social: '人脉', rank: '天榜', settings: '设置', sect: '宗门', sign: '每日签到', merc: '佣兵公会', pills: '丹药', chat: '世界频道', offline: '离线收益', trib: '渡劫' };
+const PARENT = { meridian: 'char', quests: 'home', pet: 'char', petshop: 'pet', maps: 'travel', comp: 'travel', tower: 'travel', watch: 'travel', jiyuan: 'travel', trib: 'home', rank: 'social', chat: 'social', merc: 'social', sect: 'char', pills: 'home', sign: 'home', settings: 'home', offline: 'home' };
+const TITLES = { meridian: '功法经脉', quests: '每日目标', pet: '灵宠', petshop: '碎片兑换', create: '踏入仙途', char: '角色', bag: '纳戒', travel: '云游', maps: '选择地图', comp: '同伴', tower: '锁妖塔', watch: '渡劫观礼', jiyuan: '机缘阁', dongfu: '洞府', social: '人脉', rank: '天榜', settings: '设置', sect: '宗门', sign: '每日签到', merc: '佣兵公会', pills: '丹药', chat: '世界频道', offline: '离线收益', trib: '渡劫' };
 function renderNav() { const n = $('nav'); n.innerHTML = ''; if (!S) return; const d = dots(); NAV.forEach(([k, t, i]) => { const b = document.createElement('button'); b.dataset.k = k; b.innerHTML = ic(i) + `<b>${t}</b>`; b.className = (panel === k || PARENT[panel] === k ? 'on' : '') + (d[k] ? ' dot' : ''); b.onclick = () => openPanel(k); n.appendChild(b); }); }
 function openPanel(p, arg) {
   if (p === 'trib' && FXON && S) { FX.tribPrep(); p = 'home'; }
@@ -3049,7 +3161,7 @@ const PANELS = {
   },
   meridian() {
     const M = CFG.meridian, free = merFree(), rc = merRespecCost();
-    let h = `<div class="box row" style="gap:10px"><div style="flex:1">打坐冲脉：每突破一层获得 <b>${M.ptsPerLevel}</b> 点经脉点<br><span class="muted" style="font-size:12px">已得 ${merPts()} 点 · 剩余 <b style="color:#8f2018;font-size:15px">${free}</b> 点</span></div>${B('重置经脉' + (rc ? '<br><small>' + fmt(rc) + ' 灵石</small>' : '<br><small>首次免费</small>'), () => { pop = { kind: 'confirm', text: '确定重置全部经脉点？' + (rc ? '花费灵石 ' + fmt(rc) : '（首次免费）'), fn: merRespec }; }, {}, 'btn sm')}</div>`;
+    let h = `<div class="box row" style="gap:10px"><div style="flex:1">打坐冲脉：每突破一层获得 <b>${M.ptsPerLevel}</b> 点经脉点<br><span class="muted" style="font-size:12px">已得 ${merPts()} 点 · 剩余 <b style="color:#8f2018;font-size:15px">${free}</b> 点</span></div>${B('重置经脉' + (S.mer.ticket > 0 && S.mer.respec ? '<br><small>洗点券 ×' + S.mer.ticket + '</small>' : rc ? '<br><small>' + fmt(rc) + ' 灵石</small>' : '<br><small>首次免费</small>'), () => { pop = { kind: 'confirm', text: '确定重置全部经脉点？' + (rc ? '花费灵石 ' + fmt(rc) : '（首次免费）'), fn: merRespec }; }, {}, 'btn sm')}</div>`;
     for (const k of ['atk', 'hp', 'spd']) { const ln = M.lines[k], v = S.mer[k], nx = ln.nodes.find(n => v < n.at), top = ln.nodes[ln.nodes.length - 1].at;
       h += `<div class="box mline"><div style="width:62px;font:600 15px var(--kai)">${ln.name}<br><small class="muted">${k === 'atk' ? '攻' : k === 'hp' ? '血' : '速'} +${(v * ln.per * 100).toFixed(1)}%</small></div><div style="flex:1"><div class="mbar"><i style="width:${Math.min(100, v / top * 100)}%"></i></div><div>${ln.nodes.map(n => `<span class="mnode ${v >= n.at ? 'on' : ''}" title="${n.desc}">${n.at}·${n.name}</span>`).join('')}</div><div class="muted" style="font-size:11px">${nx ? '下一窍穴「' + nx.name + '」：' + nx.desc + '（还差 ' + (nx.at - v) + '）' : '窍穴已全部冲开'}</div></div><b style="width:28px;text-align:center">${v}</b>${B('+1', () => merAdd(k, 1), { dis: !free }, 'btn sm')}${B('+5', () => merAdd(k, 5), { dis: free < 1 }, 'btn sm')}</div>`; }
     h += `<div class="sec">窍穴一览</div><div class="box muted" style="font-size:12px;line-height:1.7">${['atk', 'hp', 'spd'].map(k => M.lines[k].name + '：' + M.lines[k].nodes.map(n => n.name + '(' + n.at + ') ' + n.desc).join('；')).join('<br>')}</div>`;
@@ -3102,8 +3214,14 @@ const PANELS = {
   },
   dongfu() {
     if (S.L < CFG.dongfu.unlockL) return `<div class="box" style="text-align:center;padding:24px">${ic('lock', 'style="width:40px;height:40px;color:#8a7a60"')}<div style="font:600 17px var(--kai);margin-top:6px">洞府未开放</div><div class="muted">${lvName(CFG.dongfu.unlockL)}开放。此前可从野外、锁妖塔、机缘阁获得不老根与丹药。</div><div style="margin-top:8px">${ic('herb', 'style="color:#3e8a55"')} 不老根 ×${S.herbs}</div></div>`;
-    let h = `<div class="sec">药田<small>${ic('herb', 'style="color:#3e8a55"')} 不老根 ×${S.herbs}</small></div><div class="grid g3">`;
-    S.plots.forEach((p, i) => { const ripe = p.planted && S.serverT >= p.readyT, k = !p.planted ? -1 : ripe ? 2 : 1 - (p.readyT - S.serverT) / CFG.dongfu.growSec; h += B(`${plantSVG(k)}<span class="tm">${!p.planted ? '空地 · 点击播种' : ripe ? '可收获' : fmtT(p.readyT - S.serverT)}</span>`, () => ripe ? harvest(i) : (!p.planted ? plant(i) : toast('不老根还在生长……')), {}, 'plot' + (ripe ? ' ripe' : '')); });
+    const jl = S.df.juling, fm = S.df.farm, fc = S.df.furnace;
+    const upRow = (kind, name, lv, max, desc) => { const c = dfCost(kind); return `<div class="box row" style="gap:8px;align-items:center"><div style="flex:1"><b>${name}</b> <span class="badge o">${lv}/${max}</span><div class="muted" style="font-size:11.5px">${desc}</div></div>${c == null ? '<span class="muted">已满级</span>' : B('升级<br><small>' + fmt(c) + ' 灵石</small>', () => dfUpgrade(kind), { dis: S.lingshi < c }, 'btn sm')}</div>`; };
+    let h = `<div class="sec">洞府建筑<small>花灵石升级，消化囤积</small></div>
+    ${upRow('juling', '聚灵阵', jl, CFG.dongfu.juling.max, '打坐修为 +' + (jl * CFG.dongfu.juling.medPer * 100).toFixed(1) + '%（每级 +' + (CFG.dongfu.juling.medPer * 100).toFixed(1) + '%）')}
+    ${upRow('farm', '药田养护', fm, CFG.dongfu.farm.max, '生长 ' + fmtT(farmGrowSec()) + ' · 产量约 ' + farmHarvestN().toFixed(1))}
+    ${upRow('furnace', '炼丹炉', fc, CFG.dongfu.furnace.max, '成功率 ' + (alchRate() * 100).toFixed(0) + '% · 耗草 -' + ((fc * CFG.dongfu.furnace.herbSave) * 100).toFixed(0) + '%')}
+    <div class="sec">药田<small>${ic('herb', 'style="color:#3e8a55"')} 不老根 ×${S.herbs}</small></div><div class="grid g3">`;
+    S.plots.forEach((p, i) => { const ripe = p.planted && S.serverT >= p.readyT, k = !p.planted ? -1 : ripe ? 2 : 1 - (p.readyT - S.serverT) / farmGrowSec(); h += B(`${plantSVG(k)}<span class="tm">${!p.planted ? '空地 · 点击播种' : ripe ? '可收获' : fmtT(p.readyT - S.serverT)}</span>`, () => ripe ? harvest(i) : (!p.planted ? plant(i) : toast('不老根还在生长……')), {}, 'plot' + (ripe ? ' ripe' : '')); });
     if (S.plots.length < CFG.dongfu.plotsMax) { const c = CFG.dongfu.plotCost[S.plots.length - CFG.dongfu.plotsStart]; h += B(`${ic('lock', 'style="width:22px;height:22px"')}<br>开辟药田<br>${COIN.replace('class="gi"', 'class="ic"')}${c}`, buyPlot, { dis: S.xianyu < c }, 'plot lock'); }
     h += `</div><div style="margin-top:8px;text-align:center">${B('一键收获并补种', harvestAll, { pri: true })}</div>
     <div class="sec">炼丹房</div><div class="box furnace">${FURNACE}<div style="flex:1"><div><b>炼丹等级 ${alchLv()}</b> <span class="badge o">成功率 ${(alchRate() * 100).toFixed(0)}%</span></div><div class="bar" style="margin:6px 0"><i style="width:${(S.alchemyExp - alchLv() ** 2) / ((alchLv() + 1) ** 2 - alchLv() ** 2) * 100}%"></i></div><div class="muted">熟练度 ${S.alchemyExp}/${(alchLv() + 1) ** 2} · 每次炼制都会提升</div></div></div>
@@ -3177,10 +3295,36 @@ const PANELS = {
     ${B(S.daily.signed ? '今日已签到 ✓' : ic('gift') + ' 签到领取', signin, { pri: true, dis: S.daily.signed }, 'btn wide')}
     <div class="sec">今日</div><div class="grid g2">${stat('pill', `${S.daily.xiuwei}/${CFG.pill.xiuweiDaily}`, '修为丹已服')}${stat('tower', S.daily.towerLeft, '锁妖塔剩余')}${stat('eye', S.daily.watchLeft, '围观剩余')}${stat('merc', S.daily.merc ? '已登记' : '未登记', '佣兵')}</div>`;
   },
+  quests() {
+    ensureQuest(S.daily && String(S.daily.date).startsWith('sim') ? 'sim' : false);
+    const row = (period, q) => {
+      const bag = period === 'd' ? S.quest.d : S.quest.w, claim = period === 'd' ? S.quest.dClaim : S.quest.wClaim;
+      const cur = bag[q.key] || 0, done = cur >= q.goal, got = !!claim[q.id];
+      const rw = []; if (q.reward.xianyu) rw.push('仙玉 ' + q.reward.xianyu); if (q.reward.ticket) rw.push('洗点券 ×' + q.reward.ticket); if (q.reward.eggs) Object.entries(q.reward.eggs).forEach(([k, n]) => rw.push(({ fan: '凡蛋', ling: '灵蛋', xian: '仙蛋' })[k] + ' ×' + n)); if (q.reward.lsSec) rw.push('灵石');
+      return `<div class="box" style="margin-bottom:6px"><div class="row" style="gap:8px"><b style="flex:1">${q.name}</b><span class="badge ${done ? 'g' : ''}">${Math.min(cur, q.goal)}/${q.goal}</span></div>
+        <div class="mbar" style="margin:4px 0"><i style="width:${Math.min(100, cur / q.goal * 100)}%;background:linear-gradient(90deg,#6a9ad8,#a8d0ff)"></i></div>
+        <div class="muted" style="font-size:11.5px">${q.desc} · 奖励：${rw.join('、')}</div>
+        <div style="margin-top:5px">${got ? '<span class="muted">已领取</span>' : B(done ? '领取奖励' : '未完成', () => questClaim(period, q.id), { pri: done, dis: !done }, 'btn sm')}</div></div>`;
+    };
+    let h = `<div class="sec">每日目标<small>${S.quest.day}</small></div>`;
+    CFG.quests.daily.forEach(q => h += row('d', q));
+    h += `<div class="sec">每周目标<small>${S.quest.week}</small></div>`;
+    CFG.quests.weekly.forEach(q => h += row('w', q));
+    h += `<div class="muted" style="font-size:11.5px;margin-top:6px">洗点券可在经脉面板免费重置；跨日/跨周离线回来会自动刷新进度。</div>`;
+    return h;
+  },
   offline() {
-    const o = lastOffline || {};
-    return `<div style="text-align:center;margin-bottom:8px"><div style="font:600 18px var(--kai)">道友离开了 ${fmtT(o.dt || 0)}</div><div class="muted">${o.capped ? '超出上限，按 ' + CFG.offlineCapHours + ' 小时结算 · ' : ''}打坐与野外一起结算</div></div>
-    <div class="grid g2">${stat('lotus', '+' + fmt(o.med || 0), '打坐修为')}${stat('swords', '+' + fmt(o.field || 0), '野外修为')}${stat('coin', '+' + fmt(o.ls || 0), '灵石')}${stat('weapon', (o.items || 0) + ' 件', '装备')}${stat('swords', fmt(o.battles || 0) + ' 场', '野外战斗')}${stat('bolt', o.levels ? '+' + o.levels + ' 层' : '—', '自动突破')}${stat('egg', `凡 ${o.eggF || 0} · 灵 ${o.eggL || 0}`, '灵宠蛋')}</div>
+    const o = lastOffline || {}, sg = o.suggest;
+    let extra = '';
+    if (o.affGain) extra += stat('heart', '+' + (o.affGain || 0).toFixed(1), '同伴好感');
+    if (o.affE || o.affL) extra += stat('star', '修为+' + fmt(o.affE || 0) + ' / 灵石+' + fmt(o.affL || 0), '词缀额外');
+    if (o.eggF || o.eggL) extra += stat('paw', `凡${o.eggF || 0} 灵${o.eggL || 0}`, '灵宠蛋');
+    let merTip = '';
+    if (o.merOpened && o.merOpened.length) merTip += `<div class="muted" style="margin-top:4px">离线冲开窍穴：${o.merOpened.join('、')}</div>`;
+    if ((o.merFree || 0) > 0 && sg) merTip += `<div class="box row" style="margin-top:8px;align-items:center;gap:8px"><div style="flex:1;text-align:left">未分配经脉点 <b style="color:#8f2018">${o.merFree}</b><br><span class="muted" style="font-size:11.5px">建议 攻 ${sg.atk} · 血 ${sg.hp} · 速 ${sg.spd}</span></div>${B('一键分配', () => { merApplySuggest(); openPanel('meridian'); }, { pri: true }, 'btn sm')}</div>`;
+    return `<div style="text-align:center;margin-bottom:8px"><div style="font:600 18px var(--kai)">道友离开了 ${fmtT(o.dt || 0)}</div><div class="muted">${o.capped ? '超出上限，按 ' + CFG.offlineCapHours + ' 小时结算 · ' : ''}野外·${esc(o.map || '')} · 打坐与野外一起结算</div></div>
+    <div class="grid g2">${stat('lotus', '+' + fmt(o.med || 0), '打坐修为')}${stat('swords', '+' + fmt(o.field || 0), '野外修为')}${stat('coin', '+' + fmt(o.ls || 0), '灵石')}${stat('weapon', (o.items || 0) + ' 件', '装备')}${stat('swords', (o.wins || 0) + '/' + (o.battles || 0), '胜/场')}${stat('bolt', o.levels ? '+' + o.levels + ' 层' : '—', '突破')}${extra}</div>
+    ${merTip}
     <div style="margin-top:12px">${B('收入囊中', () => openPanel('home'), { pri: true }, 'btn wide')}</div>`;
   },
   settings() {
@@ -3220,7 +3364,7 @@ function tick() {
 
 /* 测试 / 调试接口 */
 window.XJ = {
-  CFG, MAPS, get S() { return S; }, get FB() { return FB; }, SETTLES, fmt, rate, medMult, fieldPause(v) { fbPaused = !!v; }, fieldTick, settleField, startFieldBattle, battleSec, settleText, get BOTS() { return BOTS; }, advance, setView, changeMap, fight, monGroup, buildAllies, rollAffixes, applyAffixStats, mapMul, gateStart, gateBossOf, isGateDone, buildGateBoss, tribRate, gateLook, gateTier, merAdd, merRespec, merFree, merPts, merNodes, affLv, addAff, giftComp, bondOf, myPet, enhCost, enhance, enhRate, enhMulti, playerStats, addItem, rollGrade, openEgg, openEggUI, dismantleDups, dismantlePet, dismantleEggs, exchangeEgg, petScore, showEggAnim, openPetPop(uid) { pop = { kind: 'pet', uid }; renderPanel(); }, makePet, petStats, petCoef, petFrag, petLook, dupList, isHy, hasXT, aptTier, botPower, botStats, power, charPower, deployPet, watchTrib, PSK, PETSP, needExp, needsTrib, lvName, startGame, exportSave, importSave, save, load, playerRank, rankList, recommendMap, towerStart, changeSect, renameComp, compStats, compPet, autoPets, settleChunk, simManage, hire, mercList, levelSec, optSec, daoGong, get ACC0() { return ACC0; }, tribInvite, tribPill, tribStart, craft, harvestAll, usePill, signin, checkDaily, settleOffline, simWinRate, openPanel, runAction, get actions() { return actions; }, FX, setFx(v) { FXON = v; },
+  CFG, MAPS, get S() { return S; }, get FB() { return FB; }, SETTLES, fmt, rate, medMult, fieldPause(v) { fbPaused = !!v; }, fieldTick, settleField, startFieldBattle, battleSec, settleText, get BOTS() { return BOTS; }, advance, setView, changeMap, fight, monGroup, buildAllies, rollAffixes, applyAffixStats, mapMul, gateStart, gateBossOf, isGateDone, buildGateBoss, tribRate, gateLook, gateTier, merAdd, merRespec, merFree, merPts, merNodes, affLv, addAff, giftComp, bondOf, myPet, dfUpgrade, dfCost, questAdd, questClaim, merSuggest, merApplySuggest, farmGrowSec, ensureQuest, enhCost, enhance, enhRate, enhMulti, playerStats, addItem, rollGrade, openEgg, openEggUI, dismantleDups, dismantlePet, dismantleEggs, exchangeEgg, petScore, showEggAnim, openPetPop(uid) { pop = { kind: 'pet', uid }; renderPanel(); }, makePet, petStats, petCoef, petFrag, petLook, dupList, isHy, hasXT, aptTier, botPower, botStats, power, charPower, deployPet, watchTrib, PSK, PETSP, needExp, needsTrib, lvName, startGame, exportSave, importSave, save, load, playerRank, rankList, recommendMap, towerStart, changeSect, renameComp, compStats, compPet, autoPets, settleChunk, simManage, hire, mercList, levelSec, optSec, daoGong, get ACC0() { return ACC0; }, tribInvite, tribPill, tribStart, craft, harvestAll, usePill, signin, checkDaily, settleOffline, simWinRate, openPanel, runAction, get actions() { return actions; }, FX, setFx(v) { FXON = v; },
   autoplay(maxSec, stepSec = 30, opt = {}) { // 在线挂机脚本（逐场战斗）：短时段验证用
     const fx0 = FXON; FXON = false; try { return this._autoplay(maxSec, stepSec, opt); } finally { FXON = fx0; }
   },
@@ -3269,7 +3413,8 @@ function simManage(o, st) {
   if (S.L >= CFG.dongfu.unlockL) {
     harvestAll();
     while (S.plots.length < CFG.dongfu.plotsMax && S.xianyu >= CFG.dongfu.plotCost[S.plots.length - CFG.dongfu.plotsStart]) buyPlot();
-    const can = k => S.herbs >= CFG.alchemy.recipes[k].herbs && S.lingshi >= CFG.alchemy.recipes[k].lingshi;
+    for (const k of ['juling', 'farm', 'furnace']) { const c = dfCost(k); if (c != null && S.lingshi > c * 15 && (k !== 'juling' || S.df.juling < 4)) dfUpgrade(k); }
+    const can = k => S.herbs >= craftHerbCost(CFG.alchemy.recipes[k]) && S.lingshi >= CFG.alchemy.recipes[k].lingshi;
     for (let g = 0; g < 60; g++) {
       if (S.pills.trib < 3 && can('trib')) { craft('trib'); continue; }
       if (S.buffs.field + S.pills.field * CFG.buff.dur < 12 * 3600 && can('field')) { craft('field'); continue; }
